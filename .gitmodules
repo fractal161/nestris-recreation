@@ -1,0 +1,3 @@
+[submodule "nesfab"]
+	path = nesfab
+	url = https://github.com/pubby/nesfab.git
