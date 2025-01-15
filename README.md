@@ -11,9 +11,24 @@ I have the following goals:
 
 Replicating the gameplay and visual/audio elements of an existing game has inherent copyright risks. This project is primarily intended as a personal exploration and learning exercise.
 
+## Skins
+
+To avoid distribution of visual/audio assets, we instead provide an alternate *skin*, which contain equivalents for each one. Skins can be added and customized, with limited flexibility.
+
+One planned feature is skin extraction from the original ROM, but this is not implemented yet.
+
 ## Implementation strategy
 
-I use the NES Tetris [disassembly](https://github.com/CelestialAmber/TetrisNESDisasm) as the blueprint for all expected behavior. In addition, I also cross-reference the logic with [meta_nestris](https://github.com/negative-seven/meta_nestris), which specifies the core game logic. While I intend to preserve as much of the original behavior as possible, this does not include glitches like the game crash, which are dependent on the timing of CPU cycles. However, it may be possible to implement a simulation similar to the [crash detection](https://github.com/kirjavascript/TetrisGYM/pull/61) used in TetrisGYM.
+I use the NES Tetris [disassembly](https://github.com/CelestialAmber/TetrisNESDisasm) as the blueprint for all expected behavior. In addition, I also cross-reference the logic with [meta_nestris](https://github.com/negative-seven/meta_nestris), which specifies the core game logic.
+
+Planned features:
+- All logic from the original ROM in one way or another
+- Dual NTSC/PAL support
+- Skin import from the original NES Tetris ROM
+
+Non-features:
+- Any cycle-based timing glitches, like the game crash (however, it may be possible to implement a simulation similar to the [crash detection](https://github.com/kirjavascript/TetrisGYM/pull/61) used in TetrisGYM)
+- Inaccessible code (e.g. the unfinished 2-player feature)
 
 ## Tools
 

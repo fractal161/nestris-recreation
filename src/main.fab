@@ -1,6 +1,5 @@
-// This small program plays a sound effect.
-
 // Variables:
+
 vars /sound
     UU pitch = 1000
 
@@ -11,9 +10,19 @@ fn play_sound()
     {$400A}(pitch.a)
     {$400B}(pitch.b & %111)
 
+fn load_bg()
+    ppu_reset_addr($2000)
+    for UU i = 0; i < 1024; i += 1
+        {PPUDATA}(nt_legal_ptr{i})
+
 // Game loop:
 mode main()
     {PPUCTRL}(%10000000)
+
+    ppu_upload_full_palette(@legal_palette_bg)
+    load_bg()
+    // Turn on rendering:
+    {PPUMASK}(PPUMASK_ON | PPUMASK_NO_CLIP)
     while true
         pitch *= 1.01
         play_sound()

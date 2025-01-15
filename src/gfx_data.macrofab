@@ -1,0 +1,19 @@
+#:skin:#
+
+// File for loading all skin-related data into their corresponding groups
+// implemented as a macro so the skin could be specified as a parameter
+
+// actual graphics data. ungrouped so functions can easily use it
+// TODO: i'm not a huge fan of this, might want to revisit/refactor
+omni data
+    [] layout_data
+        file(raw, #"skin"# "/layouts/legal.nam")
+    [] legal_palette_bg
+        file(raw, #"skin"# "/palettes/legal_bg.pal")
+
+// pointers to each nametable
+ct CC nt_legal_ptr = @layout_data+0
+
+// load tiles into chrom
+chrrom
+    file(raw, #"skin"# "/tiles.chr")

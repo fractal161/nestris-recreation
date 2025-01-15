@@ -1,8 +1,8 @@
-build/nestris.nes: nestris.cfg src/*.fab | buildDir
+build/nestris.nes: nestris.cfg config.fab src/*.fab src/*.macrofab | buildDir
 	./nesfab/nesfab nestris.cfg
 
 run: build/nestris.nes
-	mesen roll.nes
+	mesen build/nestris.nes
 
 release: | releaseDir
 	cp build/nestris.nes release/nestris.nes
