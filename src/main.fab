@@ -1,29 +1,68 @@
-// Variables:
+ct U[5] reference_signature = U[]($12, $34, $56, $78, $9A)
 
-vars /sound
-    UU pitch = 1000
+vars
+: +zero_page
+    UU prng_value = $8889
+    // keeping track of register state
+    U ppu_ctrl = 0
+    U ppu_mask = 0
+    UU frame_counter = 0
 
-// Sends 'pitch' variable to the APU, emitting sound:
-fn play_sound()
-    {$4015}(%100)
-    {$4008}($FF)
-    {$400A}(pitch.a)
-    {$400B}(pitch.b & %111)
+vars
+    // used to differentiate between a power-cycle and reset
+    U[5] runtime_signature
 
-fn load_bg()
-    ppu_reset_addr($2000)
-    for UU i = 0; i < 1024; i += 1
-        {PPUDATA}(nt_legal_ptr{i})
+// TODO: implement
+fn init_high_scores()
+    return
 
-// Game loop:
+fn disable_nmi()
+    ppu_ctrl &= ~PPUCTRL_NMI_ON
+    {PPUCTRL}(ppu_ctrl)
+
+fn enable_nmi()
+    ppu_ctrl |= PPUCTRL_NMI_ON
+    {PPUCTRL}(ppu_ctrl)
+
+fn update_audio()
+    return
+
+fn update_audio_and_nmi_wait()
+    update_audio()
+    nmi
+    return
+
+nmi main_nmi()
+    // TODO: reset oam_index
+    frame_counter += 1
+    // TODO: advance prng (if not NWC)
+    ppu_set_scroll(0, 0)
+    ppu_upload_oam_poll_pads(0)
+    return
+
+// entry point. used to set up variables and then jump to legal
 mode main()
-    {PPUCTRL}(%10000000)
+: nmi main_nmi
+    // TODO: the base rom zeroes out $0-$600. need to be careful that these
+    // assumptions are met
+    for U i = 0; i < 5; i += 1
+        if runtime_signature[i] != reference_signature[i]
+            init_high_scores()
+    runtime_signature = reference_signature
+    ppu_set_scroll(0, 0)
+    ppu_ctrl = PPUCTRL_NMI_ON
+    {PPUCTRL}(ppu_ctrl)
+    ppu_mask = PPUMASK_NO_CLIP
+    {PPUMASK}(ppu_mask)
+    // TODO: audio stuff, too tired to figure out
 
-    ppu_upload_full_palette(@legal_palette_bg)
-    load_bg()
-    // Turn on rendering:
-    {PPUMASK}(PPUMASK_ON | PPUMASK_NO_CLIP)
-    while true
-        pitch *= 1.01
-        play_sound()
-        nmi
+    // then some sort of stack protection that doesn't seem to work idk, i'm
+    // skipping it
+
+    safe_disable_rendering()
+    // TODO: zero out all nametables
+    // TODO: set game boards to only contain empty tiles
+    hide_oam(0)
+    safe_enable_rendering()
+    goto mode legal()
+    : preserves

@@ -1,7 +1,10 @@
 // Configuration file for game-specific options.
 
-// 0=NTSC, 1=PAL
-ct U SYSTEM = 0
+// enum for what type of rom to produce
+ct U VERSION_NTSC = 0
+ct U VERSION_PAL = 1
+ct U VERSION_NWC = 2
+ct U VERSION = VERSION_NTSC
 
 // SKINNING
 

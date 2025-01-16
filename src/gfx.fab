@@ -1,40 +1,46 @@
 // it seems the normal ppu_upload_palette function is difficult to use with
 // PAAs, which is how we're loading in palettes
 fn ppu_upload_full_palette(CC palette_ptr)
+    copy_data_to_ppu(palette_ptr, $3F00, 32)
+
+fn ppu_upload_bg_palette(CC palette_ptr)
+    copy_data_to_ppu(palette_ptr, $3F00, 16)
+
+fn ppu_upload_spr_palette(CC palette_ptr)
+    copy_data_to_ppu(palette_ptr, $3F10, 16)
+
+fn copy_data_to_ppu(CC data_ptr, AA start_addr, U length)
 : -inline
     {PPUSTATUS}()
-    {PPUADDR}($3F)
-    {PPUADDR}($00)
+    {PPUADDR}(start_addr.b)
+    {PPUADDR}(start_addr.a)
 
-    {PPUDATA}(palette_ptr[0])
-    {PPUDATA}(palette_ptr[1])
-    {PPUDATA}(palette_ptr[2])
-    {PPUDATA}(palette_ptr[3])
-    {PPUDATA}(palette_ptr[4])
-    {PPUDATA}(palette_ptr[5])
-    {PPUDATA}(palette_ptr[6])
-    {PPUDATA}(palette_ptr[7])
-    {PPUDATA}(palette_ptr[8])
-    {PPUDATA}(palette_ptr[9])
-    {PPUDATA}(palette_ptr[10])
-    {PPUDATA}(palette_ptr[11])
-    {PPUDATA}(palette_ptr[12])
-    {PPUDATA}(palette_ptr[13])
-    {PPUDATA}(palette_ptr[14])
-    {PPUDATA}(palette_ptr[15])
-    {PPUDATA}(palette_ptr[16])
-    {PPUDATA}(palette_ptr[17])
-    {PPUDATA}(palette_ptr[18])
-    {PPUDATA}(palette_ptr[19])
-    {PPUDATA}(palette_ptr[20])
-    {PPUDATA}(palette_ptr[21])
-    {PPUDATA}(palette_ptr[22])
-    {PPUDATA}(palette_ptr[23])
-    {PPUDATA}(palette_ptr[24])
-    {PPUDATA}(palette_ptr[25])
-    {PPUDATA}(palette_ptr[26])
-    {PPUDATA}(palette_ptr[27])
-    {PPUDATA}(palette_ptr[28])
-    {PPUDATA}(palette_ptr[29])
-    {PPUDATA}(palette_ptr[30])
-    {PPUDATA}(palette_ptr[31])
+    for U i = 0; i < length; i += 1
+    : +unroll
+        {PPUDATA}(data_ptr[i])
+
+fn enable_ppu()
+: +inline
+    ppu_mask |= PPUMASK_ON
+    {PPUMASK}(ppu_mask)
+
+fn disable_ppu()
+: +inline
+    ppu_mask &= ~PPUMASK_ON
+    {PPUMASK}(ppu_mask)
+
+fn enable_rendering()
+    enable_nmi()
+    enable_ppu()
+
+fn disable_rendering()
+    disable_ppu()
+    disable_nmi()
+
+fn safe_enable_rendering()
+    while {PPUSTATUS}() < $80
+    enable_rendering()
+
+fn safe_disable_rendering()
+    nmi
+    disable_rendering()
