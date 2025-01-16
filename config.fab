@@ -3,5 +3,8 @@
 // 0=NTSC, 1=PAL
 ct U SYSTEM = 0
 
-// set the second argument to the desired skin folder
+// SKINNING
+
+// Do not change the format of line!
+// the second argument is the desired skin
 macro("gfx_data", "default")
