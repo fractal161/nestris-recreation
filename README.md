@@ -28,6 +28,7 @@ Planned features:
 
 Non-features:
 - Any cycle-based timing glitches, like the game crash (however, it may be possible to implement a simulation similar to the [crash detection](https://github.com/kirjavascript/TetrisGYM/pull/61) used in TetrisGYM)
+- Other timing issues like screen transition durations, so TAS-level consistency is not enforced.
 - Inaccessible code (e.g. the unfinished 2-player feature)
 
 ## Tools

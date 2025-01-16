@@ -1,0 +1,47 @@
+/*
+ok so how should we handle nwc mode.
+
+the actual nwc rom reads the middle 2 digits of the smb score, shuffles the prng by that many times, and then waits $80 frames before immediately jumping to the gameplay itself.
+
+we obviously don't have mario, so i think the best option is to let the user pick a value themselves (needs to be a bcd value!), then proceed as normal when hitting start
+*/
+
+fn title_loop_nwc()
+    // TODO: IMPLEMENT GOOD NWC BEHAVIOR
+    return
+
+fn title_loop_normal()
+    while true
+        nmi
+        if pads[0].pressed & BUTTON_START
+            return
+        if frame_counter.b == 5
+            // TODO: timeout logic
+            // TODO: store $02 in sfxSlot1Init
+            // TODO: go to demo start mode
+
+mode title()
+: nmi main_nmi
+    // TODO: updateAudio2
+    render_mode = 0
+    // TODO: update audio here?
+    safe_disable_rendering()
+    mmc1_set_chr_0(CHR_TITLE_MENU)
+    // make both sprite/bg point to chr 0
+    ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
+
+    // TODO: replace with actual
+    reset_nametable(0)
+    // ppu_upload_full_palette(@palette_title)
+    // load_nt(nt_title_ptr)
+    hide_oam(0)
+    safe_enable_rendering()
+    frame_counter.b = 0
+    if VERSION == VERSION_NWC
+        title_loop_nwc()
+    else
+        title_loop_normal()
+
+    // TODO: store $02 in sfxSlot1Init
+    goto mode type_menu()
+    : preserves

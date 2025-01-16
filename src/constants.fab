@@ -1,0 +1,12 @@
+ct U TILE_EMPTY = $EF
+
+ct U CHR_TITLE_MENU   = $00
+ct U CHR_TYPEB_ENDING = $01
+ct U CHR_TYPEA_ENDING = $02
+ct U CHR_GAME         = $03
+
+// NTSC data
+ct U LEGAL_SLEEP_TIME_NTSC = $FF
+
+// PAL data
+ct U LEGAL_SLEEP_TIME_PAL = $CC

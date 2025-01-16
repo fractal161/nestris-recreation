@@ -44,3 +44,18 @@ fn safe_enable_rendering()
 fn safe_disable_rendering()
     nmi
     disable_rendering()
+
+fn reset_nametable(U nt)
+    ppu_set_addr($2000 + UU(nt * $400))
+    ppu_upload_fill($FF, 960)
+    ppu_upload_fill($00, 64)
+
+fn load_nt(CC nt_ptr)
+    ppu_reset_addr($2000)
+    for UU i = 0; i < 1024; i += 1
+        {PPUDATA}(nt_ptr{i})
+
+// assumes PPUADDR has already been set
+fn draw_byte(U value)
+    {PPUDATA}(value >> 4)
+    {PPUDATA}(value & %1111)

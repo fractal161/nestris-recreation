@@ -2,11 +2,13 @@ ct U[5] reference_signature = U[]($12, $34, $56, $78, $9A)
 
 vars
 : +zero_page
-    UU prng_value = $8889
+    UU prng_value = $8988
     // keeping track of register state
     U ppu_ctrl = 0
     U ppu_mask = 0
     UU frame_counter = 0
+    U oam_staging_length = 0
+    U render_mode = 0
 
 vars
     // used to differentiate between a power-cycle and reset
@@ -30,19 +32,36 @@ fn update_audio()
 fn update_audio_and_nmi_wait()
     update_audio()
     nmi
+
+// TODO: this is used in the init to reset the board state, but that's probably
+// unnecessary. Still, make sure to figure out 
+fn memset_pages(U start, U end, U value)
+    for UU i = UU(start * $100); i < UU((end+1) * $100); i += 1
+        {i}(value)
+    return
+
+fn advance_prng()
+    Bool new_bit = ((prng_value.a & %10) ^ (prng_value.b & %10)) >> 1
+    new_bit >=> prng_value
     return
 
 nmi main_nmi()
-    // TODO: reset oam_index
+    oam_staging_length = 0
+    nmi_render()
     frame_counter += 1
-    // TODO: advance prng (if not NWC)
+    if VERSION != VERSION_NWC
+        advance_prng()
     ppu_set_scroll(0, 0)
+    // TODO: alternate behavior if in demo
+    // TODO: should we use poll_famicom_pads?
     ppu_upload_oam_poll_pads(0)
+    update_pads()
     return
 
 // entry point. used to set up variables and then jump to legal
 mode main()
 : nmi main_nmi
+    state(MMC1_CHR_BANK | MMC1_MIRROR_1_LOWER)
     // TODO: the base rom zeroes out $0-$600. need to be careful that these
     // assumptions are met
     for U i = 0; i < 5; i += 1
@@ -60,8 +79,8 @@ mode main()
     // skipping it
 
     safe_disable_rendering()
-    // TODO: zero out all nametables
-    // TODO: set game boards to only contain empty tiles
+    for U i = 0; i < 4; i += 1
+        reset_nametable(i)
     hide_oam(0)
     safe_enable_rendering()
     goto mode legal()

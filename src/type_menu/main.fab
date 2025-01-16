@@ -1,0 +1,4 @@
+mode type_menu()
+: nmi main_nmi
+    while true
+        nmi

@@ -1,28 +1,31 @@
 // shows a legal screen
-vars /legal
-    UU pitch = 1000
-
-// Sends 'pitch' variable to the APU, emitting sound:
-fn play_sound()
-    {$4015}(%100)
-    {$4008}($FF)
-    {$400A}(pitch.a)
-    {$400B}(pitch.b & %111)
-
-fn load_bg()
-    ppu_reset_addr($2000)
-    for UU i = 0; i < 1024; i += 1
-        {PPUDATA}(nt_legal_ptr{i})
 
 mode legal()
 : nmi main_nmi
+    // TODO: updateAudio2
+    hide_oam(0)
+    render_mode = 0
+    if VERSION == VERSION_NWC
+        goto mode title()
+        : preserves
+    // TODO: update audio here?
     safe_disable_rendering()
-    // TODO: set sprite/bg pattern table addresses through PPUCTRL
-    // TODO: set chr banks
+    mmc1_set_chr_0(CHR_TITLE_MENU)
+    // make both sprite/bg point to chr 0
+    ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
+    {PPUCTRL}(ppu_ctrl)
+
     ppu_upload_full_palette(@legal_palette_bg)
-    load_bg()
+    load_nt(nt_legal_ptr)
+
     safe_enable_rendering()
-    while true
-        pitch *= 1.01
-        play_sound()
+    U sleep_time = LEGAL_SLEEP_TIME_NTSC
+    if VERSION == VERSION_PAL
+        sleep_time = LEGAL_SLEEP_TIME_PAL
+    wait(sleep_time)
+    for U i = 0; i < sleep_time; i += 1
+        if pads[0].pressed & BUTTON_START
+            break
         nmi
+    goto mode title()
+    : preserves

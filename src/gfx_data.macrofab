@@ -4,7 +4,6 @@
 // implemented as a macro so the skin could be specified as a parameter
 
 // actual graphics data. ungrouped so functions can easily use it
-// TODO: i'm not a huge fan of this, might want to revisit/refactor
 omni data
     [] layout_data
         file(raw, #"skin"# "/layouts/legal.nam")
