@@ -8,6 +8,7 @@ we obviously don't have mario, so i think the best option is to let the user pic
 
 fn title_loop_nwc()
     // TODO: IMPLEMENT GOOD NWC BEHAVIOR
+    // TODO: make sure to just goto mode game(), no need for other menus
     return
 
 fn title_loop_normal()
@@ -16,14 +17,14 @@ fn title_loop_normal()
         if pads[0].pressed & BUTTON_START
             return
         if frame_counter.b == 5
-            // TODO: timeout logic
             // TODO: store $02 in sfxSlot1Init
-            // TODO: go to demo start mode
+            goto mode game(true)
+            : preserves
 
 mode title()
 : nmi main_nmi
-    // TODO: updateAudio2
-    render_mode = 0
+    // TODO: updateAudio2 (i.e. mute)
+    render_mode = RENDER_MENU_SCREEN
     // TODO: update audio here?
     safe_disable_rendering()
     mmc1_set_chr_0(CHR_TITLE_MENU)

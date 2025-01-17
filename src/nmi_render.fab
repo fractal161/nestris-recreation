@@ -1,11 +1,12 @@
 ct Fn.render[1] nmi_renderers = Fn.render[](
-    @(render.legal_and_title)
+    @(render.menu_screens)
 )
 
-fn render.legal_and_title()
+fn render.menu_screens()
     // set render to top-left nametable
     ppu_ctrl &= %11111100 | PPUCTRL_NT_2000
     {PPUCTRL}(ppu_ctrl)
+
 
 fn nmi_render()
     nmi_renderers[render_mode]()

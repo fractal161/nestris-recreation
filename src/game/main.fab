@@ -1,0 +1,36 @@
+vars /game
+    U[200] playfield = U[200](TILE_EMPTY)
+    U piece_x = 5
+    U piece_y = 0
+
+    U vram_row = 0
+    U fall_timer = 0
+
+    // TODO: garbage vars, which aren't used at all but just in case
+
+    // game stats (TODO: should think about bcd)
+    UU[7] piece_counts_bcd = UU[7](0)
+    UUU score_bcd = 0
+    UU lines_bcd = 0
+    UU[4] line_clears_bcd = UU[4](0)
+
+    // demo temp vars
+
+mode game(Bool is_demo)
+: nmi main_nmi
+: employs /game
+    if is_demo
+        // TODO: all startDemo stuff
+
+    // TODO: initGameBackground
+
+    render = RENDER_GAME
+    if game_type == GAME_TYPE_B
+        lines_bcd = $25
+    // TODO: store render flags
+    update_audio_and_nmi_wait()
+    if game_type == GAME_TYPE_B
+        // TODO: init b-type playfield
+    update_music_type()
+    while true
+        nmi

@@ -1,3 +1,8 @@
+// flags
+// TODO: at some point maybe consider consolidating flags into one byte
+ct U GAME_TYPE_A = 0
+ct U GAME_TYPE_B = 1
+
 ct U TILE_EMPTY = $EF
 
 ct U CHR_TITLE_MENU   = $00

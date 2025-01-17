@@ -8,7 +8,7 @@ vars
     U ppu_mask = 0
     UU frame_counter = 0
     U oam_staging_length = 0
-    U render_mode = 0
+    U render_mode = RENDER_MENU_SCREEN
 
 vars
     // used to differentiate between a power-cycle and reset

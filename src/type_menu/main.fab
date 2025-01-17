@@ -1,4 +1,53 @@
+vars
+    U music_type = 0
+    U game_type = GAME_TYPE_A
+
+fn update_music_type()
+    // TODO: load music_type, query selection table, then set music track
+
+fn handle_type_menu_input()
+    if pads[0].pressed == BUTTON_RIGHT
+        game_type = GAME_TYPE_B
+        // TODO: store $01 in sfxSlot1Init
+    else if pads[0].pressed == BUTTON_LEFT
+        game_type = GAME_TYPE_A
+        // TODO: store $01 in sfxSlot1Init
+    else if pads[0].pressed == BUTTON_DOWN
+        if music_type < 3
+            music_type += 1
+            update_music_type()
+        // TODO: store $01 in sfxSlot1Init
+    else if pads[0].pressed == BUTTON_UP
+        // TODO: handle
+        if music_type > 0
+            music_type -= 1
+            update_music_type()
+        // TODO: store $01 in sfxSlot1Init
+    else if pads[0].pressed == BUTTON_START
+        // TODO: store $02 in sfxSlot1Init
+        goto mode level_menu()
+        : preserves
+    else if pads[0].pressed == BUTTON_B
+        // TODO: store $02 in sfxSlot1Init
+        goto mode title()
+        : preserves
+
+// nwc mode shouldn't touch this, so no need to handle it here
 mode type_menu()
 : nmi main_nmi
+    render_mode = RENDER_MENU_SCREEN
+    safe_disable_rendering()
+    // TODO: replace with actual
+    reset_nametable(0)
+    // ppu_upload_full_palette(@palette_title)
+    // load_nt(nt_title_ptr)
+    mmc1_set_chr_0(CHR_TITLE_MENU)
+    // make both sprite/bg point to chr 0
+    ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
+    hide_oam(0)
+    safe_enable_rendering()
+    update_music_type()
     while true
+        handle_type_menu_input()
+        // TODO: stage flickering arrow sprites
         nmi
