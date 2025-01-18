@@ -34,7 +34,6 @@ mode title()
     ppu_upload_full_palette(@palette_title)
     load_nt(@nt_title)
 
-    hide_oam(0)
     safe_enable_rendering()
     frame_counter.b = 0
     if VERSION == VERSION_NWC

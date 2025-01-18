@@ -31,6 +31,8 @@ fn disable_ppu()
 
 fn enable_rendering()
     enable_nmi()
+    hide_oam(0)
+    nmi
     enable_ppu()
 
 fn disable_rendering()

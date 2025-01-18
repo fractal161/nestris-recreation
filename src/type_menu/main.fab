@@ -4,6 +4,7 @@ vars
 
 fn update_music_type()
     // TODO: load music_type, query selection table, then set music track
+    return
 
 fn handle_type_menu_input()
     if pads[0].pressed == BUTTON_RIGHT
@@ -32,7 +33,29 @@ fn handle_type_menu_input()
         goto mode title()
         : preserves
 
-// nwc mode shouldn't touch this, so no need to handle it here
+fn stage_type_menu_arrow_sprites()
+    U menu_cursor_mask = MENU_CURSOR_MASK_NTSC
+    if VERSION == VERSION_PAL
+        menu_cursor_mask = MENU_CURSOR_MASK_PAL
+    if (frame_counter.a & menu_cursor_mask) != 0
+        // TODO: maybe consider a similar sprite loading strategy
+        // compared to what the actual game does?
+
+        // game type sprites
+        U sprite_x = $3F + U(96*game_type)
+        U sprite_y = $3F
+        oam_index = push_oam(oam_index, sprite_x, sprite_y, MENU_TILE_ARROW, %00000000)
+        sprite_x += $3A
+        oam_index = push_oam(oam_index, sprite_x, sprite_y, MENU_TILE_ARROW, ATTR_H_FLIP)
+
+        // music sprites
+        sprite_x = $67
+        sprite_y = $8F + (music_type << 4)
+        oam_index = push_oam(oam_index, sprite_x, sprite_y, MENU_TILE_ARROW, %00000000)
+        sprite_x += $4A
+        oam_index = push_oam(oam_index, sprite_x, sprite_y, MENU_TILE_ARROW, ATTR_H_FLIP)
+    hide_oam(oam_index)
+
 mode type_menu()
 : nmi main_nmi
     render_mode = RENDER_MENU_SCREEN
@@ -44,10 +67,9 @@ mode type_menu()
     mmc1_set_chr_0(CHR_TITLE_MENU)
     // make both sprite/bg point to chr 0
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
-    hide_oam(0)
     safe_enable_rendering()
     update_music_type()
     while true
         handle_type_menu_input()
-        // TODO: stage flickering arrow sprites
+        stage_type_menu_arrow_sprites()
         nmi

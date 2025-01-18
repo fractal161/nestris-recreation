@@ -7,16 +7,24 @@ vars
     U ppu_ctrl = 0
     U ppu_mask = 0
     UU frame_counter = 0
-    U oam_staging_length = 0
+    U oam_index = 0
     U render_mode = RENDER_MENU_SCREEN
 
 vars
     // used to differentiate between a power-cycle and reset
     U[5] runtime_signature
 
-// TODO: implement
+
 fn init_high_scores()
-    return
+    CC default_ptr = @default_high_scores
+    MM lb_ptr = @leaderboard_a
+    for U i = 0; i < 3; i += 1
+        HighScore score = read HighScore(default_ptr)
+        write HighScore(lb_ptr, score)
+    lb_ptr = @leaderboard_b
+    for U i = 0; i < 3; i += 1
+        HighScore score = read HighScore(default_ptr)
+        write HighScore(lb_ptr, score)
 
 fn disable_nmi()
     ppu_ctrl &= ~PPUCTRL_NMI_ON
@@ -46,7 +54,7 @@ fn advance_prng()
     return
 
 nmi main_nmi()
-    oam_staging_length = 0
+    oam_index = 0
     nmi_render()
     frame_counter += 1
     if VERSION != VERSION_NWC
@@ -62,8 +70,6 @@ nmi main_nmi()
 mode main()
 : nmi main_nmi
     state(MMC1_CHR_BANK | MMC1_MIRROR_1_LOWER)
-    // TODO: the base rom zeroes out $0-$600. need to be careful that these
-    // assumptions are met
     for U i = 0; i < 5; i += 1
         if runtime_signature[i] != reference_signature[i]
             init_high_scores()
@@ -81,7 +87,6 @@ mode main()
     safe_disable_rendering()
     for U i = 0; i < 4; i += 1
         reset_nametable(i)
-    hide_oam(0)
     safe_enable_rendering()
     goto mode legal()
     : preserves

@@ -1,5 +1,5 @@
 vars /game
-    U[200] playfield = U[200](TILE_EMPTY)
+    U[200] playfield = U[200](GAME_TILE_EMPTY)
     U piece_x = 5
     U piece_y = 0
 

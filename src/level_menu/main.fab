@@ -1,5 +1,14 @@
+struct HighScore
+    U[6] name
+    UUU score_bcd
+    U level
+
 vars
     U start_level = 0
+
+    // use read/write HighScore(ptr) to interface
+    [30] leaderboard_a
+    [30] leaderboard_b
 
 mode level_menu()
 : nmi main_nmi
@@ -16,7 +25,6 @@ mode level_menu()
     if game_type == GAME_TYPE_B
         // TODO: load b-type menu patch
     // TODO: show high scores
-    hide_oam(0)
     safe_enable_rendering()
     // TODO: set originalY and dropSpeed to 0 but idk why
     while start_level >= 10

@@ -24,6 +24,9 @@ omni data
     [32] palette_level_menu
         file(raw, #"skin"# "/level_menu/palette.pal")
 
+    [6 * sizeof HighScore] default_high_scores
+        file(raw, #"skin"# "/default_high_scores.bin")
+
 // load tiles into chrom
 chrrom
     file(raw, #"skin"# "/tiles.chr")
