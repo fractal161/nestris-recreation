@@ -7,7 +7,7 @@ SRC_FILES := $(shell find src -name "*.fab" -or -name '*.macrofab')
 
 SKIN := $(shell ./scripts/get_skin.sh)
 SKIN_PATH := $(SKIN_DIR)/$(SKIN)
-SKIN_FILES := $(SKIN_PATH)/.* $(SKIN_PATH)/layouts/.* $(SKIN_PATH)/palettes/.*
+SKIN_FILES := $(shell find ${SKIN_PATH} -type f)
 
 $(BUILD_PATH): $(ROM).cfg config.fab $(SRC_FILES) $(SKIN_FILES) | buildDir
 	./nesfab/nesfab $(ROM).cfg

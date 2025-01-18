@@ -15,8 +15,8 @@ mode legal()
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
     {PPUCTRL}(ppu_ctrl)
 
-    ppu_upload_full_palette(@legal_palette_bg)
-    load_nt(nt_legal_ptr)
+    ppu_upload_full_palette(@palette_legal)
+    load_nt(@nt_legal)
 
     safe_enable_rendering()
     U sleep_time = LEGAL_SLEEP_TIME_NTSC

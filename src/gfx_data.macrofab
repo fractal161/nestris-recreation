@@ -3,15 +3,26 @@
 // File for loading all skin-related data into their corresponding groups
 // implemented as a macro so the skin could be specified as a parameter
 
-// actual graphics data. ungrouped so functions can easily use it
 omni data
-    [] layout_data
-        file(raw, #"skin"# "/layouts/legal.nam")
-    [] legal_palette_bg
-        file(raw, #"skin"# "/palettes/legal_bg.pal")
+    [1024] nt_legal
+        file(raw, #"skin"# "/legal/screen.nam")
+    [32] palette_legal
+        file(raw, #"skin"# "/legal/palette.pal")
 
-// pointers to each nametable
-ct CC nt_legal_ptr = @layout_data+0
+    [1024] nt_title
+        file(raw, #"skin"# "/title/screen.nam")
+    [32] palette_title
+        file(raw, #"skin"# "/title/palette.pal")
+
+    [1024] nt_type_menu
+        file(raw, #"skin"# "/type_menu/screen.nam")
+    [32] palette_type_menu
+        file(raw, #"skin"# "/type_menu/palette.pal")
+
+    [1024] nt_level_menu
+        file(raw, #"skin"# "/level_menu/screen.nam")
+    [32] palette_level_menu
+        file(raw, #"skin"# "/level_menu/palette.pal")
 
 // load tiles into chrom
 chrrom

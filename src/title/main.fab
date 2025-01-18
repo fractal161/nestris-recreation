@@ -31,10 +31,9 @@ mode title()
     // make both sprite/bg point to chr 0
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
 
-    // TODO: replace with actual
-    reset_nametable(0)
-    // ppu_upload_full_palette(@palette_title)
-    // load_nt(nt_title_ptr)
+    ppu_upload_full_palette(@palette_title)
+    load_nt(@nt_title)
+
     hide_oam(0)
     safe_enable_rendering()
     frame_counter.b = 0

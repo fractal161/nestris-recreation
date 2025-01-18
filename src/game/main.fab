@@ -24,7 +24,7 @@ mode game(Bool is_demo)
 
     // TODO: initGameBackground
 
-    render = RENDER_GAME
+    render_mode = RENDER_GAME
     if game_type == GAME_TYPE_B
         lines_bcd = $25
     // TODO: store render flags
