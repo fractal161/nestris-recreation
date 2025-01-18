@@ -59,7 +59,7 @@ fn load_nt(CC nt_ptr)
         {PPUDATA}(nt_ptr{i})
 
 // assumes PPUADDR has already been set
-fn draw_byte(U value)
+fn print_byte(U value)
     {PPUDATA}(value >> 4)
     {PPUDATA}(value & %1111)
 

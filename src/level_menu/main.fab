@@ -1,4 +1,4 @@
-struct HighScore
+struct LeaderboardEntry
     U[6] name
     UUU score_bcd
     U level
@@ -9,6 +9,22 @@ vars
     // use read/write HighScore(ptr) to interface
     [30] leaderboard_a
     [30] leaderboard_b
+
+fn print_high_scores()
+    MM leaderboard = @leaderboard_a
+    if game_type == GAME_TYPE_B
+        leaderboard = @leaderboard_b
+    for U i = 0; i < 3; i += 1
+        LeaderboardEntry entry = read LeaderboardEntry(leaderboard)
+        ppu_set_addr_coords(9, 20 + (i << 1), 0)
+        for U j = 0; j < 6; j += 1
+            {PPUDATA}(@leaderboard_charmap[entry.name[j]])
+        {PPUDATA}($FF)
+        print_byte(entry.score_bcd.a)
+        print_byte(entry.score_bcd.b)
+        print_byte(entry.score_bcd.c)
+        {PPUDATA}($FF)
+        print_byte(entry.level)
 
 mode level_menu()
 : nmi main_nmi
@@ -33,7 +49,7 @@ mode level_menu()
                 {PPUDATA}($FF)
     else
         ppu_upload_full_palette(@palette_b_level_menu)
-    // TODO: show high scores
+    print_high_scores()
     safe_enable_rendering()
     // TODO: set originalY and dropSpeed to 0 but idk why
     while start_level >= 10

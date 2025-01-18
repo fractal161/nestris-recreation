@@ -1,5 +1,7 @@
 // Configuration file for game-specific options.
 
+ct Bool DEBUG = true
+
 // enum for what type of rom to produce
 ct U VERSION_NTSC = 0
 ct U VERSION_PAL = 1

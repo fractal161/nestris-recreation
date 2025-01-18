@@ -26,8 +26,11 @@ omni data
     [32] palette_b_level_menu
         file(raw, #"skin"# "/level_menu/palette_b.pal")
 
-    [6 * sizeof HighScore] default_high_scores
+    [6 * sizeof LeaderboardEntry] default_high_scores
         file(raw, #"skin"# "/default_high_scores.bin")
+
+    [] leaderboard_charmap
+        file(raw, #"skin"# "/leaderboard_charmap.bin")
 
 // load tiles into chrom
 chrrom

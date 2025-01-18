@@ -25,6 +25,8 @@ ct U GAME_TILE_EMPTY = $EF
 
 // platform specific parameters
 ct fn LEGAL_SLEEP_TIME() U
+    if DEBUG
+        return 0
     if VERSION == VERSION_PAL
         return LEGAL_SLEEP_TIME_PAL
     return LEGAL_SLEEP_TIME_NTSC
