@@ -21,8 +21,10 @@ omni data
 
     [1024] nt_level_menu
         file(raw, #"skin"# "/level_menu/screen.nam")
-    [32] palette_level_menu
-        file(raw, #"skin"# "/level_menu/palette.pal")
+    [32] palette_a_level_menu
+        file(raw, #"skin"# "/level_menu/palette_a.pal")
+    [32] palette_b_level_menu
+        file(raw, #"skin"# "/level_menu/palette_b.pal")
 
     [6 * sizeof HighScore] default_high_scores
         file(raw, #"skin"# "/default_high_scores.bin")

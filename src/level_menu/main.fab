@@ -19,11 +19,20 @@ mode level_menu()
     // make both sprite/bg point to chr 0
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
 
-    ppu_upload_full_palette(@palette_level_menu)
     load_nt(@nt_level_menu)
 
-    if game_type == GAME_TYPE_B
-        // TODO: load b-type menu patch
+    if game_type == GAME_TYPE_A
+        ppu_upload_full_palette(@palette_a_level_menu)
+        // set to A-type
+        ppu_set_addr_coords(13, 3, 0)
+        {PPUDATA}($0A)
+        // erase height
+        for U i = 0; i < 8; i += 1
+            ppu_set_addr_coords(19, 7+i, 0)
+            for U j = 0; j < 8; j += 1
+                {PPUDATA}($FF)
+    else
+        ppu_upload_full_palette(@palette_b_level_menu)
     // TODO: show high scores
     safe_enable_rendering()
     // TODO: set originalY and dropSpeed to 0 but idk why

@@ -23,6 +23,17 @@ ct U MENU_TILE_ARROW = $27
 
 ct U GAME_TILE_EMPTY = $EF
 
+// platform specific parameters
+ct fn LEGAL_SLEEP_TIME() U
+    if VERSION == VERSION_PAL
+        return LEGAL_SLEEP_TIME_PAL
+    return LEGAL_SLEEP_TIME_NTSC
+
+ct fn MENU_CURSOR_MASK() U
+    if VERSION == VERSION_PAL
+        return MENU_CURSOR_MASK_PAL
+    return MENU_CURSOR_MASK_NTSC
+
 // NTSC data
 ct U LEGAL_SLEEP_TIME_NTSC = $FF
 ct U MENU_CURSOR_MASK_NTSC = %00000011

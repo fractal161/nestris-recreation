@@ -34,10 +34,7 @@ fn handle_type_menu_input()
         : preserves
 
 fn stage_type_menu_arrow_sprites()
-    U menu_cursor_mask = MENU_CURSOR_MASK_NTSC
-    if VERSION == VERSION_PAL
-        menu_cursor_mask = MENU_CURSOR_MASK_PAL
-    if (frame_counter.a & menu_cursor_mask) != 0
+    if (frame_counter.a & MENU_CURSOR_MASK()) != 0
         // TODO: maybe consider a similar sprite loading strategy
         // compared to what the actual game does?
 

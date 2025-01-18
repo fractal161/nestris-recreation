@@ -18,11 +18,8 @@ mode legal()
     load_nt(@nt_legal)
 
     safe_enable_rendering()
-    U sleep_time = LEGAL_SLEEP_TIME_NTSC
-    if VERSION == VERSION_PAL
-        sleep_time = LEGAL_SLEEP_TIME_PAL
-    wait(sleep_time)
-    for U i = 0; i < sleep_time; i += 1
+    wait(LEGAL_SLEEP_TIME())
+    for U i = 0; i < LEGAL_SLEEP_TIME(); i += 1
         if pads[0].pressed & BUTTON_START
             break
         nmi

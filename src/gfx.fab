@@ -49,7 +49,7 @@ fn safe_disable_rendering()
     disable_rendering()
 
 fn reset_nametable(U nt)
-    ppu_set_addr($2000 + UU(nt * $400))
+    ppu_set_addr_coords(0, 0, nt)
     ppu_upload_fill($FF, 960)
     ppu_upload_fill($00, 64)
 
@@ -62,3 +62,10 @@ fn load_nt(CC nt_ptr)
 fn draw_byte(U value)
     {PPUDATA}(value >> 4)
     {PPUDATA}(value & %1111)
+
+fn ppu_addr_from_coords(U x, U y, U nt) UU
+: +inline
+    return UU($2000) + UU($400 * nt) + UU($20 * y) + UU(x)
+
+fn ppu_set_addr_coords(U x, U y, U nt)
+    ppu_set_addr(ppu_addr_from_coords(x, y, nt))
