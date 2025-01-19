@@ -1,14 +1,27 @@
+vars
+    Bool show_next_piece
+
 vars /game
+    Bool is_demo
+
     U[200] playfield = U[200](GAME_TILE_EMPTY)
     U piece_x = 5
     U piece_y = 0
+    U das_charge = 0
+    U fall_timer = 0
+
+    U active_piece_id
+    U next_piece_id
 
     U vram_row = 0
-    U fall_timer = 0
+    U game_render_flags = 0
+
+    Bool allegro = false
 
     // TODO: garbage vars, which aren't used at all but just in case
 
     // game stats (TODO: should think about bcd)
+    U level_number
     UU[7] piece_counts_bcd = UU[7](0)
     UUU score_bcd = 0
     UU lines_bcd = 0
@@ -16,21 +29,62 @@ vars /game
 
     // demo temp vars
 
-mode game(Bool is_demo)
+fn update_timers_and_check_select()
+    fall_timer += 1
+    if VERSION != VERSION_NWC && pads[0].pressed & BUTTON_SELECT > 0
+        show_next_piece = !show_next_piece
+
+mode game(Bool is_demo_param)
 : nmi main_nmi
 : employs /game
+    is_demo = is_demo_param
     if is_demo
         // TODO: all startDemo stuff
 
     // TODO: initGameBackground
+    safe_disable_rendering()
+    mmc1_set_chr_0(CHR_GAME)
+    // make both sprite/bg point to chr 0
+    ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
+    ppu_upload_full_palette(@palette_game)
+    load_nt(@nt_game)
+    ppu_set_addr_coords(24, 5, 0)
+    MM lb = @leaderboard_a
+    if game_type == GAME_TYPE_B
+        lb = @leaderboard_b
+    LeaderboardEntry top_entry = read LeaderboardEntry(lb)
+    print_byte(top_entry.score_bcd.a)
+    print_byte(top_entry.score_bcd.b)
+    print_byte(top_entry.score_bcd.c)
 
+    if game_type == GAME_TYPE_B
+        // mark as b-type
+        ppu_set_addr_coords(3, 4, 0)
+        {PPUDATA}($0B)
+        // TODO: patch in height box
+
+    safe_enable_rendering()
+    // TODO: set play state if necessary
+    level_number = start_level
+
+
+    // initGameState
+    fall_timer = INITIAL_FALL_TIMER()
     render_mode = RENDER_GAME
+
+    // init current and next piece
+    active_piece_id = get_next_piece_id()
+    advance_prng()
+    next_piece_id = get_next_piece_id()
+
     if game_type == GAME_TYPE_B
         lines_bcd = $25
-    // TODO: store render flags
+    game_render_flags = GAME_RENDER_STATS | GAME_RENDER_SCORE | GAME_RENDER_LEVEL | GAME_RENDER_LINES
     update_audio_and_nmi_wait()
     if game_type == GAME_TYPE_B
         // TODO: init b-type playfield
     update_music_type()
+
     while true
+        update_timers_and_check_select()
         nmi

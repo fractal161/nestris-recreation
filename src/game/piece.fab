@@ -1,0 +1,56 @@
+// total_piece_count persists across the game's lifetime, so we make it groupless
+// piece_spawn_id should be reset at the start of every game, which is why we include it in the /game grup
+vars
+    U total_piece_count = 0
+
+vars /game
+    U piece_spawn_id = 0 // seems to be used exclusively by pick_next_piece
+
+ct U PIECE_ID_TU = $00
+ct U PIECE_ID_TR = $01
+ct U PIECE_ID_TD = $02
+ct U PIECE_ID_TL = $03
+ct U PIECE_ID_JL = $04
+ct U PIECE_ID_JU = $05
+ct U PIECE_ID_JR = $06
+ct U PIECE_ID_JD = $07
+ct U PIECE_ID_ZH = $08
+ct U PIECE_ID_ZV = $09
+ct U PIECE_ID_O  = $0A
+ct U PIECE_ID_SH = $0B
+ct U PIECE_ID_SV = $0C
+ct U PIECE_ID_LR = $0D
+ct U PIECE_ID_LD = $0E
+ct U PIECE_ID_LL = $0F
+ct U PIECE_ID_LU = $10
+ct U PIECE_ID_IV = $11
+ct U PIECE_ID_IH = $12
+ct U PIECE_ID_NONE = $13
+
+
+ct U[] piece_spawn_id_table = U[](
+    PIECE_ID_TD, PIECE_ID_JD, PIECE_ID_ZH, PIECE_ID_O,
+    PIECE_ID_SH, PIECE_ID_LD, PIECE_ID_IH,
+)
+
+fn get_next_piece_id() U
+    if is_demo
+        return get_demo_piece_id()
+    if VERSION == VERSION_NWC
+        advance_prng()
+    total_piece_count += 1
+    // first pass
+    U piece_type = (prng_value.b + total_piece_count) & %111
+    if piece_type != %111 && piece_spawn_id != piece_spawn_id_table[piece_type]
+        piece_spawn_id = piece_spawn_id_table[piece_type]
+        return piece_spawn_id
+    // second pass (reroll)
+    advance_prng()
+    piece_type = (prng_value.b & %111) + piece_spawn_id
+    while piece_type >= 7
+        piece_type -= 7
+    piece_spawn_id = piece_spawn_id_table[piece_type]
+    return piece_spawn_id
+
+fn get_demo_piece_id() U
+    return 0

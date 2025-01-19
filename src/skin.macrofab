@@ -26,6 +26,11 @@ omni data
     [32] palette_b_level_menu
         file(raw, #"skin"# "/level_menu/palette_b.pal")
 
+    [1024] nt_game
+        file(raw, #"skin"# "/game/screen.nam")
+    [32] palette_game
+        file(raw, #"skin"# "/game/palette.pal")
+
     [6 * sizeof LeaderboardEntry] default_high_scores
         file(raw, #"skin"# "/default_high_scores.bin")
 

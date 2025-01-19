@@ -25,6 +25,7 @@ mode title()
 : nmi main_nmi
     // TODO: updateAudio2 (i.e. mute)
     render_mode = RENDER_MENU_SCREEN
+    show_next_piece = true
     // TODO: update audio here?
     safe_disable_rendering()
     mmc1_set_chr_0(CHR_TITLE_MENU)
