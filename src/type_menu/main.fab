@@ -9,27 +9,26 @@ fn update_music_type()
 fn handle_type_menu_input()
     if pads[0].pressed == BUTTON_RIGHT
         game_type = GAME_TYPE_B
-        // TODO: store $01 in sfxSlot1Init
+        puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_LEFT
         game_type = GAME_TYPE_A
-        // TODO: store $01 in sfxSlot1Init
+        puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_DOWN
         if music_type < 3
             music_type += 1
             update_music_type()
-        // TODO: store $01 in sfxSlot1Init
+        puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_UP
-        // TODO: handle
         if music_type > 0
             music_type -= 1
             update_music_type()
-        // TODO: store $01 in sfxSlot1Init
+        puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_START
-        // TODO: store $02 in sfxSlot1Init
+        puf.play_sfx(puf_sfx_menuselect)
         goto mode level_menu()
         : preserves
     else if pads[0].pressed == BUTTON_B
-        // TODO: store $02 in sfxSlot1Init
+        puf.play_sfx(puf_sfx_menuselect)
         goto mode title()
         : preserves
 

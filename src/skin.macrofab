@@ -32,6 +32,10 @@ omni data
     [] leaderboard_charmap
         file(raw, #"skin"# "/leaderboard_charmap.bin")
 
+// audio
+audio(puf1_music)
+audio(puf1_sfx, #"skin"# "/sfx.txt", #"skin"# "/sfx.nsf")
+
 // load tiles into chrom
 chrrom
     file(raw, #"skin"# "/tiles.chr")
