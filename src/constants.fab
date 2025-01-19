@@ -21,6 +21,8 @@ ct U CHR_GAME         = $03
 
 ct U MENU_TILE_ARROW = $27
 
+ct U LEVEL_TILE_CURSOR = $FC
+
 ct U GAME_TILE_EMPTY = $EF
 
 // platform specific parameters

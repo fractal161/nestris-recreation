@@ -3,8 +3,12 @@ struct LeaderboardEntry
     UUU score_bcd
     U level
 
+vars /level_menu
+    Bool is_selecting_height = false
+
 vars
     U start_level = 0
+    U start_height = 0
 
     // use read/write HighScore(ptr) to interface
     [30] leaderboard_a
@@ -25,6 +29,77 @@ fn print_high_scores()
         print_byte(entry.score_bcd.c)
         {PPUDATA}($FF)
         print_byte(entry.level)
+
+// legacy function that shuffles the prng a bunch
+fn choose_random_hole()
+    do while prng_value.b & $0F < $0A
+        advance_prng()
+
+fn handle_level_menu_input()
+    // first check/handle dpad (staging sprites if necessary
+    if pads[0].pressed == BUTTON_RIGHT
+        if is_selecting_height && start_height < 5
+            start_height += 1
+        if !is_selecting_height && start_level < 9
+            start_level += 1
+        // TODO: store $01 in sfxSlot1
+    if pads[0].pressed == BUTTON_LEFT
+        if is_selecting_height && start_height > 0
+            start_height -= 1
+        if !is_selecting_height && start_level > 0
+            start_level -= 1
+        // TODO: store $01 in sfxSlot1
+    if pads[0].pressed == BUTTON_DOWN
+        if is_selecting_height && start_height < 3
+            start_height += 3
+        if !is_selecting_height && start_level < 4
+            start_level += 5
+        // TODO: store $01 in sfxSlot1
+    if pads[0].pressed == BUTTON_UP
+        if is_selecting_height && start_height >= 3
+            start_height -= 3
+        if !is_selecting_height && start_level >= 5
+            start_level -= 5
+        // TODO: store $01 in sfxSlot1
+    if game_type == GAME_TYPE_B && pads[0].pressed == BUTTON_A
+        is_selecting_height = !is_selecting_height
+        // TODO: store $01 in sfxSlot1
+    if pads[0].pressed == BUTTON_START
+        if pads[0].held == BUTTON_START | BUTTON_A
+            start_level += 10
+            // TODO: store $02 in sfxSlot1
+        goto mode game(false)
+        : preserves
+    if pads[0].pressed == BUTTON_B
+        // TODO: store $02 in sfxSlot1
+        goto mode type_menu()
+        : preserves
+
+fn stage_level_menu_cursor(U x, U y)
+    for U i = 0; i < 2; i += 1
+        for U j = 0; j < 2; j += 1
+            oam_index = push_oam(oam_index, x + (i << 3), y + (j << 3), LEVEL_TILE_CURSOR, ATTR_PRIORITY | %01)
+
+// TODO: would like to generate these using coordinates
+ct U[6] height_cursor_x = U[]($9C,$AC,$BC,$9C,$AC,$BC)
+ct U[6] height_cursor_y = U[]($53,$53,$53,$63,$63,$63)
+
+ct U[10] level_cursor_x = U[]($34,$44,$54,$64,$74,$34,$44,$54,$64,$74)
+ct U[10] level_cursor_y = U[]($53,$53,$53,$53,$53,$63,$63,$63,$63,$63)
+
+fn stage_level_menu_sprites()
+    Bool flicker_on = (frame_counter.a & MENU_CURSOR_MASK()) != 0
+    if !(flicker_on && is_selecting_height) && game_type == GAME_TYPE_B
+        // stage height cursor
+        U sprite_x = height_cursor_x[start_height]
+        U sprite_y = height_cursor_y[start_height]
+        stage_level_menu_cursor(sprite_x, sprite_y)
+    if !(flicker_on && !is_selecting_height)
+        // stage level cursor
+        U sprite_x = level_cursor_x[start_level]
+        U sprite_y = level_cursor_y[start_level]
+        stage_level_menu_cursor(sprite_x, sprite_y)
+    hide_oam(oam_index)
 
 mode level_menu()
 : nmi main_nmi
@@ -51,8 +126,11 @@ mode level_menu()
         ppu_upload_full_palette(@palette_b_level_menu)
     print_high_scores()
     safe_enable_rendering()
-    // TODO: set originalY and dropSpeed to 0 but idk why
     while start_level >= 10
         start_level -= 10
     while true
+        handle_level_menu_input()
+        stage_level_menu_sprites()
+        choose_random_hole()
+        choose_random_hole()
         nmi
