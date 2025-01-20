@@ -6,6 +6,14 @@ vars
 vars /game
     U piece_spawn_id = 0 // seems to be used exclusively by pick_next_piece
 
+ct U PIECE_T = $00
+ct U PIECE_J = $01
+ct U PIECE_Z = $02
+ct U PIECE_O = $03
+ct U PIECE_S = $04
+ct U PIECE_L = $05
+ct U PIECE_I = $06
+
 ct U PIECE_ID_TU = $00
 ct U PIECE_ID_TR = $01
 ct U PIECE_ID_TD = $02
@@ -51,6 +59,16 @@ ct U[] cw_id_table = U[](
     PIECE_ID_SV, PIECE_ID_SH,
     PIECE_ID_LD, PIECE_ID_LL, PIECE_ID_LU, PIECE_ID_LR,
     PIECE_ID_IH, PIECE_ID_IV,
+)
+
+ct U[] piece_id_to_type_table = U[](
+    PIECE_T, PIECE_T, PIECE_T, PIECE_T,
+    PIECE_J, PIECE_J, PIECE_J, PIECE_J,
+    PIECE_Z, PIECE_Z,
+    PIECE_O,
+    PIECE_S, PIECE_S,
+    PIECE_L, PIECE_L, PIECE_L, PIECE_L,
+    PIECE_I, PIECE_I,
 )
 
 fn get_next_piece_id() U

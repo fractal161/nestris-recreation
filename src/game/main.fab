@@ -1,17 +1,22 @@
 vars
     Bool show_next_piece
 
+// we allocate the full page to properly simulate the top row bug
+vars /game
+: +align
+    [256] board
+        U[256](GAME_TILE_EMPTY)
+
 vars /game
     Bool is_demo
     Bool game_over = false
 
-    [200] board
-        U[200](GAME_TILE_EMPTY)
-
     U piece_x = 5
     U piece_y = 0
     U das_charge = 0
-    U fall_timer = 0
+    U gravity_timer = 0
+    // used for both initial delay and pushdown
+    U secondary_fall_timer = INITIAL_GAME_DELAY()
 
     U active_piece_id
     U next_piece_id
@@ -19,16 +24,14 @@ vars /game
     U vram_row = 0
     U game_render_flags = 0
     U completed_lines = 0
+    U curtain_row
 
     Bool allegro = false
-
-    // TODO: garbage vars, which aren't used at all but just in case
-
 
     // demo temp vars
 
 fn update_timers_and_check_select()
-    fall_timer += 1
+    gravity_timer += 1
     if VERSION != VERSION_NWC && pads[0].pressed & BUTTON_SELECT > 0
         show_next_piece = !show_next_piece
 
@@ -116,21 +119,21 @@ mode game(Bool is_demo_param)
 
 
     // initGameState
-    fall_timer = INITIAL_FALL_TIMER()
     render_mode = RENDER_GAME
 
     // init current and next piece
     active_piece_id = get_next_piece_id()
+    increment_piece_count(active_piece_id)
     advance_prng()
     next_piece_id = get_next_piece_id()
 
     if game_type == GAME_TYPE_B
         lines_bcd = $25
-    game_render_flags = GAME_RENDER_STATS | GAME_RENDER_SCORE | GAME_RENDER_LEVEL | GAME_RENDER_LINES
+    game_render_flags = GAME_RENDER_PIECE_COUNT | GAME_RENDER_SCORE | GAME_RENDER_LEVEL | GAME_RENDER_LINES
     update_audio_and_nmi_wait()
     if game_type == GAME_TYPE_B
         // TODO: init b-type playfield
-    update_music_type()
+    set_music()
 
     while true
         update_timers_and_check_select()

@@ -1,0 +1,90 @@
+vars /game
+    U play_state
+
+// each game action returns the resulting state
+ct Fn.game_action[10] game_actions = Fn.game_action[](
+    @(game_action.player_control), // PLAY_STATE_GAME
+    @(game_action.lock_piece), // PLAY_STATE_LOCK_PIECE
+    @(game_action.check_full_lines), // PLAY_STATE_CHECK_FULL_LINES
+    @(game_action.wait_for_line_clear_anim),
+    @(game_action.update_stats),
+    @(game_action.check_b_type_done),
+    @(game_action.receive_garbage),
+    @(game_action.get_next_piece),
+    @(game_action.unknown_noop),
+    @(game_action.game_over_curtain),
+)
+
+fn game_action.player_control() U
+    handle_lr()
+    handle_ab()
+    return handle_gravity()
+
+fn game_action.lock_piece() U
+    if !is_position_valid()
+        // TODO: store $02 in sfxSlot0Init
+        curtain_row = $F0
+        mute_audio()
+        return PLAY_STATE_GAME_OVER_CURTAIN
+    if vram_row < $20
+        return PLAY_STATE_LOCK_PIECE
+    // TODO: actually add minos to the playfield
+    return PLAY_STATE_CHECK_FULL_LINES
+
+fn game_action.check_full_lines() U
+    if vram_row < $20
+        return PLAY_STATE_CHECK_FULL_LINES
+    // MM/game board_ptr = @board
+    // for U i = 0; i < 20; i += 1
+    //     U[10] row = read U[10](board_ptr)
+    return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
+
+// does nothing, since play_state is increased during vblank
+fn game_action.wait_for_line_clear_anim() U
+    return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
+
+fn game_action.update_stats() U
+    // TODO: allegro check
+    handle_line_count()
+    handle_pushdown()
+    handle_line_clear_points()
+    return PLAY_STATE_CHECK_B_TYPE_DONE
+
+fn game_action.check_b_type_done() U
+    if game_type == GAME_TYPE_A
+        if VERSION == VERSION_PAL
+            // TODO: a-type pal debug
+    else
+        if VERSION == VERSION_PAL
+            // TODO: b-type pal debug
+        // TODO: everything else (copy graphics, play music, wait, then ending)
+    return PLAY_STATE_RECEIVE_GARBAGE
+
+fn game_action.receive_garbage() U
+    return PLAY_STATE_GET_NEXT_PIECE
+
+fn game_action.get_next_piece() U
+    if vram_row < $20
+        return PLAY_STATE_GET_NEXT_PIECE
+    gravity_timer = 0
+    piece_y = 0
+    piece_x = 5
+    // TODO: there's a lookup table that i don't think is necessary??
+    active_piece_id = next_piece_id
+    increment_piece_count(active_piece_id)
+    next_piece_id = get_next_piece_id()
+    secondary_fall_timer = 0
+    return PLAY_STATE_GAME
+
+// allegedly waits for something but idk what, will rename later
+fn game_action.unknown_noop() U
+    return PLAY_STATE_UNKNOWN_NOOP
+
+fn game_action.game_over_curtain() U
+    return PLAY_STATE_GAME_OVER_CURTAIN
+
+
+fn update_player()
+    play_state = game_actions[play_state]()
+    // TODO: stage current piece sprite
+    // TODO: stage next piece sprite

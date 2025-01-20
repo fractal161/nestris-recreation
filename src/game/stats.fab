@@ -6,6 +6,18 @@ vars /game
     // UU[4] line_clears_bcd = UU[4](0)
     U pushdown = 0
 
+fn increment_piece_count(U piece_id)
+    U piece_type = piece_id_to_type_table[piece_id]
+    UU count = piece_counts_bcd[piece_type]
+    count += 1
+    if count.a & %1111 >= $0A
+        count.a += 6
+    if count.a >= $A0
+        count.a += $60
+        count.b += 1
+    piece_counts_bcd[piece_type] = count
+    game_render_flags |= GAME_RENDER_PIECE_COUNT
+
 fn handle_line_count()
     if completed_lines == 0
         return
@@ -62,9 +74,6 @@ fn handle_line_clear_points()
             break
     game_render_flags |= GAME_RENDER_SCORE
     completed_lines = 0
-    play_state = PLAY_STATE_CHECK_B_TYPE_DONE
-
-ct UU[] points_bcd_table = UU[]($0000, $0040, $0100, $0300, $1200)
 
 fn should_transition() Bool
     // bugged level comparison from the original game

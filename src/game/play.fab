@@ -43,9 +43,55 @@ fn handle_ab()
     else
         active_piece_id = piece_id_tmp
 
-fn handle_gravity()
-    return
+fn handle_gravity() U
+    // initial delay behavior
+    if secondary_fall_timer >= $80
+        if pads[0].pressed & BUTTON_DOWN == 0
+            secondary_fall_timer += 1
+            return PLAY_STATE_GAME
+        else
+            secondary_fall_timer = 0
+    // normal gravity behavior (update state)
+    if secondary_fall_timer == 0
+        update_normal_drop_state()
+    else
+        update_pushdown_drop_state()
+    return try_drop()
 
-// 
+fn update_normal_drop_state()
+    if pads[0].held & (BUTTON_LEFT | BUTTON_RIGHT) > 0
+        return
+    if pads[0].pressed & BUTTON_DPAD == BUTTON_DOWN
+        secondary_fall_timer = 1
+
+// @autorepeating
+fn update_pushdown_drop_state()
+    if pads[0].held & BUTTON_DPAD != BUTTON_DOWN
+        secondary_fall_timer = 0
+        pushdown = 0
+        return
+    secondary_fall_timer += 1
+    if secondary_fall_timer >= 3
+        secondary_fall_timer = 1
+        pushdown += 1
+
+// returns the resulting playstate
+fn try_drop() U 
+    U gravity = get_gravity(level_number)
+    if gravity_timer < gravity
+        return PLAY_STATE_GAME
+    gravity_timer = 0
+    piece_y += 1
+    if !is_position_valid()
+        piece_y -= 1
+        // TODO: "update playfield" (just setting vram i think)
+        return PLAY_STATE_LOCK_PIECE
+    return PLAY_STATE_GAME
+
+fn get_gravity(U level) U
+    if level >= 29
+        return 1
+    return GRAVITY_TABLE()[level]
+
 fn is_position_valid() Bool
     return true

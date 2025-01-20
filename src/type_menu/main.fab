@@ -1,10 +1,6 @@
 vars
     U game_type = GAME_TYPE_A
 
-fn update_music_type()
-    // TODO: load music_type, query selection table, then set music track
-    return
-
 fn handle_type_menu_input()
     if pads[0].pressed == BUTTON_RIGHT
         game_type = GAME_TYPE_B
@@ -15,12 +11,12 @@ fn handle_type_menu_input()
     else if pads[0].pressed == BUTTON_DOWN
         if music_type < NUM_MUSIC_TRACKS
             music_type += 1
-            update_music_type()
+            set_music()
         puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_UP
         if music_type > 0
             music_type -= 1
-            update_music_type()
+            set_music()
         puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_START
         puf.play_sfx(puf_sfx_menuselect)
@@ -62,7 +58,7 @@ mode type_menu()
     // make both sprite/bg point to chr 0
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
     safe_enable_rendering()
-    update_music_type()
+    set_music()
     while true
         handle_type_menu_input()
         stage_type_menu_arrow_sprites()
