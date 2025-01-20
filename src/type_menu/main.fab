@@ -1,5 +1,4 @@
 vars
-    U music_type = 0
     U game_type = GAME_TYPE_A
 
 fn update_music_type()
@@ -14,7 +13,7 @@ fn handle_type_menu_input()
         game_type = GAME_TYPE_A
         puf.play_sfx(puf_sfx_menuchange)
     else if pads[0].pressed == BUTTON_DOWN
-        if music_type < 3
+        if music_type < NUM_MUSIC_TRACKS
             music_type += 1
             update_music_type()
         puf.play_sfx(puf_sfx_menuchange)
@@ -34,8 +33,7 @@ fn handle_type_menu_input()
 
 fn stage_type_menu_arrow_sprites()
     if (frame_counter.a & MENU_CURSOR_MASK()) != 0
-        // TODO: maybe consider a similar sprite loading strategy
-        // compared to what the actual game does?
+        // TODO: maybe consider a similar sprite loading strategy compared to what the actual game does?
 
         // game type sprites
         U sprite_x = $3F + U(96*game_type)

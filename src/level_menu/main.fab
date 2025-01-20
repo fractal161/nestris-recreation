@@ -103,7 +103,7 @@ fn stage_level_menu_sprites()
 
 mode level_menu()
 : nmi main_nmi
-    // TODO: updateAudio2
+    mute_audio()
     render_mode = RENDER_MENU_SCREEN
     safe_disable_rendering()
     mmc1_set_chr_0(CHR_TITLE_MENU)
@@ -133,4 +133,4 @@ mode level_menu()
         stage_level_menu_sprites()
         choose_random_hole()
         choose_random_hole()
-        nmi
+        update_audio_and_nmi_wait()

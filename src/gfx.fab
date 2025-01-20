@@ -31,7 +31,6 @@ fn disable_ppu()
 
 fn enable_rendering()
     enable_nmi()
-    hide_oam(0)
     nmi
     enable_ppu()
 
@@ -41,6 +40,7 @@ fn disable_rendering()
 
 fn safe_enable_rendering()
     while {PPUSTATUS}() < $80
+    hide_oam(0)
     enable_rendering()
     ppu_set_scroll(0, 0)
 

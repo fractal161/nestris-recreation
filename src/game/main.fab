@@ -3,8 +3,11 @@ vars
 
 vars /game
     Bool is_demo
+    Bool game_over = false
 
-    U[200] playfield = U[200](GAME_TILE_EMPTY)
+    [200] board
+        U[200](GAME_TILE_EMPTY)
+
     U piece_x = 5
     U piece_y = 0
     U das_charge = 0
@@ -15,17 +18,12 @@ vars /game
 
     U vram_row = 0
     U game_render_flags = 0
+    U completed_lines = 0
 
     Bool allegro = false
 
     // TODO: garbage vars, which aren't used at all but just in case
 
-    // game stats (TODO: should think about bcd)
-    U level_number
-    UU[7] piece_counts_bcd = UU[7](0)
-    UUU score_bcd = 0
-    UU lines_bcd = 0
-    UU[4] line_clears_bcd = UU[4](0)
 
     // demo temp vars
 
@@ -34,14 +32,60 @@ fn update_timers_and_check_select()
     if VERSION != VERSION_NWC && pads[0].pressed & BUTTON_SELECT > 0
         show_next_piece = !show_next_piece
 
+fn handle_game_over()
+    if !game_over
+        return
+    render_mode = RENDER_GAME
+    // TODO: in the original game, the logic is only called when playState == 0, but this happens for like 2 frames in total and the behavior is weird so i'm setting this to a separate variable for now and we'll get to it later
+
+// returns true if we should follow the dlr bug
+fn check_for_reset_key() Bool
+    if VERSION == VERSION_NWC
+        return false
+
+    if pads[0].held == BUTTON_A | BUTTON_B | BUTTON_SELECT | BUTTON_START
+        mute_audio()
+        goto mode legal()
+        : preserves
+    return pads[0].held == BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT
+
+fn handle_start_button()
+    return
+    if VERSION == VERSION_NWC || pads[0].held != BUTTON_START
+        return
+    if is_demo
+        goto mode title()
+        : preserves
+    // prevent pausing during curtain/congratulations
+    if render_mode != RENDER_GAME || play_state == PLAY_STATE_GAME_OVER_CURTAIN
+        return
+    // todo: pause music
+    render_mode = RENDER_MENU_SCREEN
+    update_audio_and_nmi_wait()
+    ppu_mask = PPUMASK_SPR_ON | PPUMASK_NO_CLIP
+    {PPUMASK}(ppu_mask)
+    hide_oam(0)
+    do while true
+        // TODO: stage pause sprite
+        if pads[0].pressed == BUTTON_START
+            break
+        update_audio_and_nmi_wait()
+        hide_oam(0)
+    ppu_mask = PPUMASK_ON | PPUMASK_NO_CLIP
+    {PPUMASK}(ppu_mask)
+    // resume play
+    vram_row = 0
+    render_mode = RENDER_GAME
+
 mode game(Bool is_demo_param)
 : nmi main_nmi
 : employs /game
     is_demo = is_demo_param
     if is_demo
         // TODO: all startDemo stuff
+        game_type == GAME_TYPE_A
 
-    // TODO: initGameBackground
+    // initGameBackground
     safe_disable_rendering()
     mmc1_set_chr_0(CHR_GAME)
     // make both sprite/bg point to chr 0
@@ -64,8 +108,11 @@ mode game(Bool is_demo_param)
         // TODO: patch in height box
 
     safe_enable_rendering()
-    // TODO: set play state if necessary
-    level_number = start_level
+    play_state = PLAY_STATE_GAME
+    if is_demo
+        level_number = 0
+    else
+        level_number = start_level
 
 
     // initGameState
@@ -87,4 +134,12 @@ mode game(Bool is_demo_param)
 
     while true
         update_timers_and_check_select()
-        nmi
+        handle_game_over()
+        update_player()
+        Bool dlr_bug = check_for_reset_key()
+        if dlr_bug
+            update_audio_and_nmi_wait()
+            hide_oam(0)
+        handle_start_button()
+        update_audio_and_nmi_wait()
+        hide_oam(0)

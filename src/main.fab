@@ -34,13 +34,6 @@ fn enable_nmi()
     ppu_ctrl |= PPUCTRL_NMI_ON
     {PPUCTRL}(ppu_ctrl)
 
-fn update_audio()
-    return
-
-fn update_audio_and_nmi_wait()
-    update_audio()
-    nmi
-
 // TODO: this is used in the init to reset the board state, but that's probably
 // unnecessary. Still, make sure to figure out 
 fn memset_pages(U start, U end, U value)

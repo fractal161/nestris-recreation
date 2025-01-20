@@ -1,0 +1,76 @@
+vars /game
+    U level_number
+    UU[7] piece_counts_bcd = UU[7](0)
+    UUU score_bcd = 0
+    UU lines_bcd = 0
+    // UU[4] line_clears_bcd = UU[4](0)
+    U pushdown = 0
+
+fn handle_line_count()
+    if completed_lines == 0
+        return
+    game_render_flags |= GAME_RENDER_LINES
+    if game_type == GAME_TYPE_A
+        lines_bcd.a += completed_lines
+        if lines_bcd.a & %1111 >= $0A
+            lines_bcd.a += 6
+        if lines_bcd.a >= $A0
+            lines_bcd.a += $60
+            lines_bcd.b += 1
+        if should_transition()
+            level_number += 1
+            game_render_flags |= GAME_RENDER_LEVEL
+            puf.play_sfx(puf_sfx_levelup)
+    else
+        lines_bcd.a -= completed_lines
+        if lines_bcd.a >= $80
+            lines_bcd = 0
+        else if lines_bcd.a & %1111 >= $0A
+            lines_bcd -= 6
+
+// performs carries in the way that the game handles them
+fn carry_bcd_uuu(UUU bcd) UUU
+    if bcd.a & %1111 >= $0A
+        bcd.a += $06
+    if bcd.a >= $A0
+        bcd.a += $60
+        bcd.b += 1
+    if bcd.b & %1111 >= $0A
+        bcd.b += $06
+    if bcd.b >= $A0
+        bcd.b += $60
+        bcd.c += 1
+    if bcd.c & %111 >= $0A
+        bcd.c += $06
+    return bcd
+
+fn handle_pushdown()
+    if pushdown < 2
+        return
+    score_bcd += pushdown - 1
+    score_bcd = carry_bcd_uuu(score_bcd)
+    game_render_flags |= GAME_RENDER_SCORE
+
+fn handle_line_clear_points()
+    pushdown = 0
+    UU points = points_bcd_table[completed_lines]
+    for U i = 0; i <= level_number; i += 1
+        score_bcd += points
+        score_bcd = carry_bcd_uuu(score_bcd)
+        if score_bcd.c >= $A0
+            score_bcd = $999999
+            break
+    game_render_flags |= GAME_RENDER_SCORE
+    completed_lines = 0
+    play_state = PLAY_STATE_CHECK_B_TYPE_DONE
+
+ct UU[] points_bcd_table = UU[]($0000, $0040, $0100, $0300, $1200)
+
+fn should_transition() Bool
+    // bugged level comparison from the original game
+    U false_level = (lines_bcd.b << 4) + (lines_bcd.a >> 4)
+    if VERSION == VERSION_NWC
+        false_level <<= 1
+        if lines_bcd.a & %1111 >= 5
+            false_level += 1
+    return false_level > level_number

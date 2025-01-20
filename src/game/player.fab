@@ -1,0 +1,65 @@
+vars /game
+    U play_state
+
+ct Fn.game_action[10] game_actions = Fn.game_action[](
+    @(game_action.player_control), // PLAY_STATE_GAME
+    @(game_action.lock_piece), // PLAY_STATE_LOCK_PIECE
+    @(game_action.check_full_lines), // PLAY_STATE_CHECK_FULL_LINES
+    @(game_action.wait_for_line_clear_anim),
+    @(game_action.update_stats),
+    @(game_action.check_b_type_done),
+    @(game_action.receive_garbage),
+    @(game_action.get_next_piece),
+    @(game_action.unknown_noop),
+    @(game_action.game_over_curtain),
+)
+
+fn game_action.player_control()
+    handle_lr()
+    handle_ab()
+    handle_gravity()
+
+fn game_action.lock_piece()
+    return
+
+fn game_action.check_full_lines()
+    MM/game board_ptr = @board
+    for U i = 0; i < 20; i += 1
+        U[10] row = read U[10](board_ptr)
+    return
+
+// does nothing, since play_state is increased during vblank
+fn game_action.wait_for_line_clear_anim()
+    return
+
+fn game_action.update_stats()
+    // TODO: allegro check
+    handle_line_count()
+    handle_pushdown()
+    handle_line_clear_points()
+
+fn game_action.check_b_type_done()
+    // TODO: pal debug mode also implemented here
+    if game_type == GAME_TYPE_A
+        return
+    // TODO
+
+fn game_action.receive_garbage()
+    play_state = PLAY_STATE_GET_NEXT_PIECE
+    return
+
+fn game_action.get_next_piece()
+    return
+
+// allegedly waits for something but idk what, will rename later
+fn game_action.unknown_noop()
+    return
+
+fn game_action.game_over_curtain()
+    return
+
+
+fn update_player()
+    game_actions[play_state]()
+    // TODO: stage current piece sprite
+    // TODO: stage next piece sprite

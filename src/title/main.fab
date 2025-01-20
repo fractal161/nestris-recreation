@@ -23,7 +23,7 @@ fn title_loop_normal()
 
 mode title()
 : nmi main_nmi
-    // TODO: updateAudio2 (i.e. mute)
+    mute_audio()
     render_mode = RENDER_MENU_SCREEN
     show_next_piece = true
     // TODO: update audio here?

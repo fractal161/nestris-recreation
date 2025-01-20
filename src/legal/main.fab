@@ -2,7 +2,7 @@
 
 mode legal()
 : nmi main_nmi
-    // TODO: updateAudio2
+    mute_audio()
     render_mode = RENDER_MENU_SCREEN
     if VERSION == VERSION_NWC
         goto mode title()

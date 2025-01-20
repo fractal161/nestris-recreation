@@ -7,6 +7,15 @@ fn render.menu_screens()
     ppu_ctrl &= %11111100 | PPUCTRL_NT_2000
     {PPUCTRL}(ppu_ctrl)
 
+fn render.game()
 
 fn nmi_render()
-    nmi_renderers[render_mode]()
+    switch render_mode
+        case RENDER_MENU_SCREEN
+            render.menu_screens()
+            break
+        case RENDER_GAME
+            render.game()
+        default:
+            break
+    // nmi_renderers[render_mode]()

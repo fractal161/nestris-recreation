@@ -1,0 +1,51 @@
+// shifts
+fn handle_lr()
+    if pads[0].held & BUTTON_DOWN > 0
+        return
+    if pads[0].held & (BUTTON_LEFT | BUTTON_RIGHT) == 0
+        return
+    // if l or r is pressed, we should reset das and actually move the piece
+    if pads[0].pressed & (BUTTON_LEFT | BUTTON_RIGHT) > 0
+        das_charge = 0
+        try_shift_piece()
+    // else if l or r is held, we increase das_charge and compare it with 16
+    // if equal, shift the piece and set it to 10
+    if pads[0].held & (BUTTON_LEFT | BUTTON_RIGHT) > 0
+        das_charge += 1
+        if das_charge == DAS_THRESHOLD()
+            das_charge = DAS_CHECKPOINT()
+            try_shift_piece()
+
+fn try_shift_piece()
+    U piece_x_tmp = piece_x
+    if pads[0].held & BUTTON_RIGHT > 0
+        piece_x += 1
+    else if pads[0].held & BUTTON_LEFT > 0
+        piece_x -= 1
+
+    if is_position_valid()
+        puf.play_sfx(puf_sfx_shiftpiece)
+    else
+        piece_x = piece_x_tmp
+        das_charge = DAS_THRESHOLD()
+
+// rotation
+fn handle_ab()
+    U piece_id_tmp = active_piece_id
+    if pads[0].pressed & BUTTON_A > 0
+        active_piece_id = cw_id_table[active_piece_id]
+    else if pads[0].pressed & BUTTON_B > 0
+        active_piece_id = ccw_id_table[active_piece_id]
+    else
+        return
+    if is_position_valid()
+        puf.play_sfx(puf_sfx_rotatepiece)
+    else
+        active_piece_id = piece_id_tmp
+
+fn handle_gravity()
+    return
+
+// 
+fn is_position_valid() Bool
+    return true
