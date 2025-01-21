@@ -1,0 +1,10 @@
+struct Board
+    U[256] cells
+
+fn board_write_cell(Board board, U x, U y, U tile)
+: +inline
+    board.cells[U(10 * y) + x] = tile
+
+fn board_get_cell(Board board, U x, U y) U
+: +inline
+    return board.cells[U(10 * y) + x]

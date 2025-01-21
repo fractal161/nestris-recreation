@@ -34,13 +34,6 @@ fn enable_nmi()
     ppu_ctrl |= PPUCTRL_NMI_ON
     {PPUCTRL}(ppu_ctrl)
 
-// TODO: this is used in the init to reset the board state, but that's probably
-// unnecessary. Still, make sure to figure out 
-fn memset_pages(U start, U end, U value)
-    for UU i = UU(start * $100); i < UU((end+1) * $100); i += 1
-        {i}(value)
-    return
-
 fn advance_prng()
     Bool new_bit = ((prng_value.a & %10) ^ (prng_value.b & %10)) >> 1
     new_bit >=> prng_value
@@ -52,11 +45,12 @@ nmi main_nmi()
     frame_counter += 1
     if VERSION != VERSION_NWC
         advance_prng()
-    ppu_set_scroll(0, 0)
     // TODO: alternate behavior if in demo
     // TODO: should we use poll_famicom_pads?
     ppu_upload_oam_poll_pads(0)
     update_pads()
+    fence
+    ppu_set_scroll(0, 0)
     return
 
 // entry point. used to set up variables and then jump to legal

@@ -1,5 +1,3 @@
-// flags
-// TODO: at some point maybe consider consolidating flags into one byte
 ct U GAME_TYPE_A = 0
 ct U GAME_TYPE_B = 1
 
@@ -38,7 +36,11 @@ ct U MENU_TILE_ARROW = $27
 
 ct U LEVEL_TILE_CURSOR = $FC
 
+ct U GAME_TILE_1 = $7B
+ct U GAME_TILE_2 = $7C
+ct U GAME_TILE_3 = $7D
 ct U GAME_TILE_EMPTY = $EF
+ct U GAME_TILE_HIDDEN = $FF
 
 // platform specific parameters
 ct fn LEGAL_SLEEP_TIME() U

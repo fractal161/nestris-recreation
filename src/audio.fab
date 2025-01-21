@@ -14,8 +14,8 @@ fn update_audio_and_nmi_wait()
     nmi
 
 fn set_music()
-    if music_type < NUM_MUSIC_TRACKS
-        U speed = puf.play_track(music_type)
-        // TODO: allegro things
-    else
-        puf.stop(0)
+    // if music_type < NUM_MUSIC_TRACKS
+    //     U speed = puf.play_track(music_type)
+    //     // TODO: allegro things
+    // else
+    //     puf.stop(0)

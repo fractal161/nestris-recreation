@@ -4,8 +4,7 @@ vars
 // we allocate the full page to properly simulate the top row bug
 vars /game
 : +align
-    [256] board
-        U[256](GAME_TILE_EMPTY)
+    Board board = Board(U[256](GAME_TILE_EMPTY))
 
 vars /game
     Bool is_demo
@@ -121,7 +120,7 @@ mode game(Bool is_demo_param)
     // initGameState
     render_mode = RENDER_GAME
 
-    // init current and next piece
+    // init active and next piece
     active_piece_id = get_next_piece_id()
     increment_piece_count(active_piece_id)
     advance_prng()

@@ -86,5 +86,21 @@ fn game_action.game_over_curtain() U
 
 fn update_player()
     play_state = game_actions[play_state]()
-    // TODO: stage current piece sprite
-    // TODO: stage next piece sprite
+    stage_active_piece_sprites()
+    stage_next_piece_sprites()
+
+// top left coordinate is 96, 47 ($60, $2F) (12, 6 in tiles)
+fn stage_active_piece_sprites()
+    PieceTileset tileset = get_piece_tileset(active_piece_id)
+    for U i = 0; i < 4; i += 1
+        PieceTile tile = tileset.tiles[i]
+        U x = piece_x + tile.x_offset
+        U y = piece_y + tile.y_offset
+        if y >= $80
+            continue
+        U sprite_x = 96 + (x << 3)
+        U sprite_y = 47 + (y << 3)
+        oam_index = push_oam(oam_index, sprite_x, sprite_y, tile.tile_type, %00000010)
+
+// just load the sprite template lmao
+fn stage_next_piece_sprites()

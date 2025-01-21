@@ -34,6 +34,7 @@ ct U PIECE_ID_LU = $10
 ct U PIECE_ID_IV = $11
 ct U PIECE_ID_IH = $12
 ct U PIECE_ID_NONE = $13
+ct U NUM_PIECE_IDS = $14
 
 
 ct U[] piece_spawn_id_table = U[](
@@ -70,6 +71,184 @@ ct U[] piece_id_to_type_table = U[](
     PIECE_L, PIECE_L, PIECE_L, PIECE_L,
     PIECE_I, PIECE_I,
 )
+
+struct PieceTile
+    U x_offset
+    U y_offset
+    U tile_type
+
+struct PieceTileset
+    PieceTile[4] tiles
+
+ct CC[] piece_orientation_ptrs = CC[](
+    CC(piece_orientation_data.tu),
+    CC(piece_orientation_data.tr),
+    CC(piece_orientation_data.td),
+    CC(piece_orientation_data.tl),
+    CC(piece_orientation_data.jl),
+    CC(piece_orientation_data.ju),
+    CC(piece_orientation_data.jr),
+    CC(piece_orientation_data.jd),
+    CC(piece_orientation_data.zh),
+    CC(piece_orientation_data.zv),
+    CC(piece_orientation_data.o),
+    CC(piece_orientation_data.sh),
+    CC(piece_orientation_data.sv),
+    CC(piece_orientation_data.lr),
+    CC(piece_orientation_data.ld),
+    CC(piece_orientation_data.ll),
+    CC(piece_orientation_data.lu),
+    CC(piece_orientation_data.iv),
+    CC(piece_orientation_data.ih),
+    CC(piece_orientation_data.hidden),
+)
+
+omni data
+    [] piece_orientation_data
+        label tu
+        PieceTile[4](
+            PieceTile(-1, 0, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
+            PieceTile(1, 0, GAME_TILE_1),
+            PieceTile(0, -1, GAME_TILE_1),
+        )
+        label tr
+        PieceTile[4](
+            PieceTile(0, -1, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
+            PieceTile(1, 0, GAME_TILE_1),
+            PieceTile(0, 1, GAME_TILE_1),
+        )
+        label td
+        PieceTile[4](
+            PieceTile(-1, 0, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
+            PieceTile(1, 0, GAME_TILE_1),
+            PieceTile(0, 1, GAME_TILE_1),
+        )
+        label tl
+        PieceTile[4](
+            PieceTile(0, -1, GAME_TILE_1),
+            PieceTile(-1, 0, GAME_TILE_1),
+            PieceTile(1, 0, GAME_TILE_1),
+            PieceTile(0, 1, GAME_TILE_1),
+        )
+        label jl
+        PieceTile[4](
+            PieceTile(0, -1, GAME_TILE_3),
+            PieceTile(0, 0, GAME_TILE_3),
+            PieceTile(-1, 1, GAME_TILE_3),
+            PieceTile(0, 1, GAME_TILE_3),
+        )
+        label ju
+        PieceTile[4](
+            PieceTile(-1, -1, GAME_TILE_3),
+            PieceTile(-1, 0, GAME_TILE_3),
+            PieceTile(0, 0, GAME_TILE_3),
+            PieceTile(1, 0, GAME_TILE_3),
+        )
+        label jr
+        PieceTile[4](
+            PieceTile(0, -1, GAME_TILE_3),
+            PieceTile(1, -1, GAME_TILE_3),
+            PieceTile(0, 0, GAME_TILE_3),
+            PieceTile(0, 1, GAME_TILE_3),
+        )
+        label jd
+        PieceTile[4](
+            PieceTile(-1, 0, GAME_TILE_3),
+            PieceTile(0, 0, GAME_TILE_3),
+            PieceTile(1, 0, GAME_TILE_3),
+            PieceTile(1, 1, GAME_TILE_3),
+        )
+        label zh
+        PieceTile[4](
+            PieceTile(-1, 0, GAME_TILE_2),
+            PieceTile(0, 0, GAME_TILE_2),
+            PieceTile(0, 1, GAME_TILE_2),
+            PieceTile(1, 1, GAME_TILE_2),
+        )
+        label zv
+        PieceTile[4](
+            PieceTile(1, -1, GAME_TILE_2),
+            PieceTile(0, 0, GAME_TILE_2),
+            PieceTile(1, 0, GAME_TILE_2),
+            PieceTile(0, 1, GAME_TILE_2),
+        )
+        label o
+        PieceTile[4](
+            PieceTile(-1, 0, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
+            PieceTile(-1, 1, GAME_TILE_1),
+            PieceTile(0, 1, GAME_TILE_1),
+        )
+        label sh
+        PieceTile[4](
+            PieceTile(0, 0, GAME_TILE_3),
+            PieceTile(1, 0, GAME_TILE_3),
+            PieceTile(-1, 1, GAME_TILE_3),
+            PieceTile(0, 1, GAME_TILE_3),
+        )
+        label sv
+        PieceTile[4](
+            PieceTile(0, -1, GAME_TILE_3),
+            PieceTile(0, 0, GAME_TILE_3),
+            PieceTile(1, 0, GAME_TILE_3),
+            PieceTile(1, 1, GAME_TILE_3),
+        )
+        label lr
+        PieceTile[4](
+            PieceTile(0, -1, GAME_TILE_2),
+            PieceTile(0, 0, GAME_TILE_2),
+            PieceTile(0, 1, GAME_TILE_2),
+            PieceTile(1, 1, GAME_TILE_2),
+        )
+        label ld
+        PieceTile[4](
+            PieceTile(-1, 0, GAME_TILE_2),
+            PieceTile(0, 0, GAME_TILE_2),
+            PieceTile(1, 0, GAME_TILE_2),
+            PieceTile(-1, 1, GAME_TILE_2),
+        )
+        label ll
+        PieceTile[4](
+            PieceTile(-1, -1, GAME_TILE_2),
+            PieceTile(0, -1, GAME_TILE_2),
+            PieceTile(0, 0, GAME_TILE_2),
+            PieceTile(0, 1, GAME_TILE_2),
+        )
+        label lu
+        PieceTile[4](
+            PieceTile(1, -1, GAME_TILE_2),
+            PieceTile(-1, 0, GAME_TILE_2),
+            PieceTile(0, 0, GAME_TILE_2),
+            PieceTile(1, 0, GAME_TILE_2),
+        )
+        label iv
+        PieceTile[4](
+            PieceTile(0, -2, GAME_TILE_1),
+            PieceTile(0, -1, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
+            PieceTile(0, 1, GAME_TILE_1),
+        )
+        label ih
+        PieceTile[4](
+            PieceTile(-2, 0, GAME_TILE_1),
+            PieceTile(-1, 0, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
+            PieceTile(1, 0, GAME_TILE_1),
+        )
+        label hidden
+        PieceTile[4](
+            PieceTile(0, 0, GAME_TILE_HIDDEN),
+            PieceTile(0, 0, GAME_TILE_HIDDEN),
+            PieceTile(0, 0, GAME_TILE_HIDDEN),
+            PieceTile(0, 0, GAME_TILE_HIDDEN),
+        )
+
+fn get_piece_tileset(U piece_id) PieceTileset
+    CC ptr = piece_orientation_ptrs[piece_id]
+    return read PieceTileset(ptr)
 
 fn get_next_piece_id() U
     if is_demo

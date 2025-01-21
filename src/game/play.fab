@@ -84,9 +84,16 @@ fn try_drop() U
     piece_y += 1
     if !is_position_valid()
         piece_y -= 1
-        // TODO: "update playfield" (just setting vram i think)
+        set_board_vram_row()
         return PLAY_STATE_LOCK_PIECE
     return PLAY_STATE_GAME
+
+fn set_board_vram_row()
+    U new_vram_row = 0
+    if piece_y > 2
+        new_vram_row = piece_y - 2
+    if new_vram_row < vram_row
+        vram_row = new_vram_row
 
 fn get_gravity(U level) U
     if level >= 29
@@ -94,4 +101,17 @@ fn get_gravity(U level) U
     return GRAVITY_TABLE()[level]
 
 fn is_position_valid() Bool
+    PieceTileset tileset = get_piece_tileset(active_piece_id)
+    for U i = 0; i < 4; i += 1
+        PieceTile tile = tileset.tiles[i]
+        U x = piece_x + tile.x_offset
+        U y = piece_x + tile.y_offset
+        // ensure x is in range
+        if x >= 10 || x >= $80
+            return false
+        // ensure y is in range
+        if (y+2) >= 22
+            return false
+        if board_get_cell(board, x, y) != GAME_TILE_EMPTY
+            return false
     return true
