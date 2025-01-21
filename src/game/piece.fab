@@ -129,8 +129,8 @@ omni data
         label tl
         PieceTile[4](
             PieceTile(0, -1, GAME_TILE_1),
+            PieceTile(0, 0, GAME_TILE_1),
             PieceTile(-1, 0, GAME_TILE_1),
-            PieceTile(1, 0, GAME_TILE_1),
             PieceTile(0, 1, GAME_TILE_1),
         )
         label jl

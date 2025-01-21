@@ -51,35 +51,38 @@ fn handle_gravity() U
             return PLAY_STATE_GAME
         else
             secondary_fall_timer = 0
-    // normal gravity behavior (update state)
     if secondary_fall_timer == 0
-        update_normal_drop_state()
-    else
-        update_pushdown_drop_state()
-    return try_drop()
+        return normal_drop()
+    return pushdown_drop()
 
-fn update_normal_drop_state()
+fn normal_drop() U
     if pads[0].held & (BUTTON_LEFT | BUTTON_RIGHT) > 0
-        return
+        return try_gravity_drop()
     if pads[0].pressed & BUTTON_DPAD == BUTTON_DOWN
         secondary_fall_timer = 1
+    return try_gravity_drop()
 
 // @autorepeating
-fn update_pushdown_drop_state()
+fn pushdown_drop() U
     if pads[0].held & BUTTON_DPAD != BUTTON_DOWN
         secondary_fall_timer = 0
         pushdown = 0
-        return
+        return try_gravity_drop()
     secondary_fall_timer += 1
-    if secondary_fall_timer >= 3
-        secondary_fall_timer = 1
-        pushdown += 1
+    if secondary_fall_timer < 3
+        return try_gravity_drop()
+    secondary_fall_timer = 1
+    pushdown += 1
+    return try_drop()
 
-// returns the resulting playstate
-fn try_drop() U 
+fn try_gravity_drop() U
     U gravity = get_gravity(level_number)
     if gravity_timer < gravity
         return PLAY_STATE_GAME
+    return try_drop()
+
+// returns the resulting playstate
+fn try_drop() U 
     gravity_timer = 0
     piece_y += 1
     if !is_position_valid()
@@ -105,7 +108,7 @@ fn is_position_valid() Bool
     for U i = 0; i < 4; i += 1
         PieceTile tile = tileset.tiles[i]
         U x = piece_x + tile.x_offset
-        U y = piece_x + tile.y_offset
+        U y = piece_y + tile.y_offset
         // ensure x is in range
         if x >= 10 || x >= $80
             return false
