@@ -100,7 +100,7 @@ ct CC[] piece_orientation_ptrs = CC[](
     CC(piece_orientation_data.lu),
     CC(piece_orientation_data.iv),
     CC(piece_orientation_data.ih),
-    CC(piece_orientation_data.hidden),
+    CC(piece_orientation_data.none),
 )
 
 omni data
@@ -238,7 +238,7 @@ omni data
             PieceTile(0, 0, GAME_TILE_1),
             PieceTile(1, 0, GAME_TILE_1),
         )
-        label hidden
+        label none
         PieceTile[4](
             PieceTile(0, 0, GAME_TILE_HIDDEN),
             PieceTile(0, 0, GAME_TILE_HIDDEN),

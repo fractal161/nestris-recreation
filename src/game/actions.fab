@@ -28,35 +28,70 @@ fn game_action.lock_piece() U
         return PLAY_STATE_GAME_OVER_CURTAIN
     if S(vram_row) < $20
         return PLAY_STATE_LOCK_PIECE
-    PieceTileset tileset = get_piece_tileset(active_piece_id)
-    for U i = 0; i < 4; i += 1
-        PieceTile tile = tileset.tiles[i]
-        U x = piece_x + tile.x_offset
-        U y = piece_y + tile.y_offset
-        board_set_cell(board, x, y, tile.tile_type)
+    add_piece_to_board()
     line_index = 0
     set_board_vram_row()
     // TODO: updateMusicSpeed
     return PLAY_STATE_CHECK_FULL_LINES
 
-// HOW THIS WORKS:
+fn add_piece_to_board()
+    PieceTileset tileset = get_piece_tileset(active_piece_id)
+    for U i = 0; i < 4; i += 1
+        PieceTile tile = tileset.tiles[i]
+        U x = piece_x + tile.x_offset
+        U y = piece_y + tile.y_offset
+        // board_set_cell(board, x, y, tile.tile_type)
+        board.cells[U(10 * y) + x] = tile.tile_type
+
+
 // every piece fits inside a 4x4 box constructed around its center.
 // the line index iterates through every row intersecting that box to check
 // for line clears
+// TODO: check that top row bug is preserved
 fn game_action.check_full_lines() U
     if S(vram_row) < $20
         return PLAY_STATE_CHECK_FULL_LINES
     U row = 0
     if S(piece_y) >= 2
         row = piece_y - 2
-    
+    row += line_index
+
+    if is_row_full(row) == $01
+        // TODO: store $0A in sfxslot1, which is "tetrisclear", but i still
+        // don't know what the difference is
+        completed_lines += 1
+        completed_rows[line_index] = row
+        // copy rows
+        for U i = row - 1; row >= 0; i -= 1
+            copy_row_from_above(i)
+        // clear top row
+        for U i = 0; i < 10; i += 1
+            board_set_cell(board, i, 0, GAME_TILE_EMPTY)
+        active_piece_id = PIECE_ID_NONE
+    else
+        completed_rows[line_index] = 0
     line_index += 1
     if S(line_index) < $04
         return PLAY_STATE_CHECK_FULL_LINES
-    // if completed_lines == 0
-    //     return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
-    // puf.play_sfx(puf_sfx_lockpiece)
+    vram_row = 0
+    line_clear_animation_step = 0
+    if completed_lines == 4
+        puf.play_sfx(puf_sfx_tetrisinit)
+    if completed_lines > 0
+        return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
+    puf.play_sfx(puf_sfx_lockpiece)
     return PLAY_STATE_UPDATE_STATS
+
+fn is_row_full(U row) U
+    for U i = 0; i < 10; i += 1
+        if board.cells[U(10 * row) + i] == GAME_TILE_EMPTY
+            return $00
+    return $01
+
+fn copy_row_from_above(U row)
+    for U j = 0; j < 10; j += 1
+        U cell = board_get_cell(board, j, row)
+        board_set_cell(board, j, row+1, cell)
 
 // does nothing, since play_state is increased during vblank
 fn game_action.wait_for_line_clear_anim() U
@@ -104,7 +139,38 @@ fn game_action.game_over_curtain() U
 
 
 fn update_player()
-    play_state = game_actions[play_state]()
+    switch play_state
+        case PLAY_STATE_GAME
+            play_state = game_action.player_control()
+            break
+        case PLAY_STATE_LOCK_PIECE
+            play_state = game_action.lock_piece()
+            break
+        case PLAY_STATE_CHECK_FULL_LINES
+            play_state = game_action.check_full_lines()
+            break
+        case PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
+            play_state = game_action.wait_for_line_clear_anim()
+            break
+        case PLAY_STATE_UPDATE_STATS
+            play_state = game_action.update_stats()
+            break
+        case PLAY_STATE_CHECK_B_TYPE_DONE
+            play_state = game_action.check_b_type_done()
+            break
+        case PLAY_STATE_RECEIVE_GARBAGE
+            play_state = game_action.receive_garbage()
+            break
+        case PLAY_STATE_GET_NEXT_PIECE
+            play_state = game_action.get_next_piece()
+            break
+        case PLAY_STATE_UNKNOWN_NOOP
+            play_state = game_action.unknown_noop()
+            break
+        case PLAY_STATE_GAME_OVER_CURTAIN
+            play_state = game_action.game_over_curtain()
+            break
+    // play_state = game_actions[play_state]()
     stage_active_piece_sprites()
     stage_next_piece_sprites()
 

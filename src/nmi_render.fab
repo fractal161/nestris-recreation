@@ -10,6 +10,8 @@ fn render.menu_screens()
 fn render.game()
     if play_state == PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
         // TODO: AAAAAAAAAAAA
+        // this is temporary
+        play_state = PLAY_STATE_UPDATE_STATS
     else
         for U i = 0; i < 4; i += 1
             copy_board_row_to_vram()

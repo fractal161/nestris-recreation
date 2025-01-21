@@ -24,6 +24,8 @@ vars /game
     U line_index = 0
     U game_render_flags = 0
     U completed_lines = 0
+    U[4] completed_rows
+    U line_clear_animation_step = 0
     U curtain_row
 
     Bool allegro = false
