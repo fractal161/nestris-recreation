@@ -11,7 +11,8 @@ fn render.game()
     if play_state == PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
         // TODO: AAAAAAAAAAAA
     else
-        // TODO: copy stuff to vram
+        for U i = 0; i < 4; i += 1
+            copy_board_row_to_vram()
     if game_render_flags & GAME_RENDER_LINES > 0
         ppu_set_addr_coords(19, 3, 0)
         {PPUDATA}(lines_bcd.b)
@@ -20,18 +21,7 @@ fn render.game()
         ppu_set_addr_coords(26, 21, 0)
         U level_display = legacy_level_display_table[level_number]
         print_byte(level_display)
-        // reimplement glitched color behavior
-        U legacy_level_mod10 = level_number
-        while legacy_level_mod10 < $8A && legacy_level_mod10 >= 10
-            legacy_level_mod10 -= 10
-        // change bg colors
-        ppu_set_addr($3F08)
-        for U i = 0; i < 4; i += 1
-            {PPUDATA}(legacy_level_color_table[(legacy_level_mod10 << 2) + i])
-        // change sprite colors
-        ppu_set_addr($3F18)
-        for U i = 0; i < 4; i += 1
-            {PPUDATA}(legacy_level_color_table[(legacy_level_mod10 << 2) + i])
+        update_game_palette()
     if game_render_flags & GAME_RENDER_SCORE > 0
         ppu_set_addr_coords(24, 8, 0)
         print_byte(score_bcd.c)
@@ -48,6 +38,31 @@ fn render.game()
     game_render_flags &= !(GAME_RENDER_LINES | GAME_RENDER_LEVEL |
         GAME_RENDER_SCORE | GAME_RENDER_PIECE_COUNT)
     // TODO: tetris flash
+
+fn update_game_palette()
+    // reimplement glitched color behavior
+    U legacy_level_mod10 = level_number
+    while S(legacy_level_mod10) >= 10
+        legacy_level_mod10 -= 10
+    // change bg colors
+    ppu_set_addr($3F08)
+    for U i = 0; i < 4; i += 1
+        {PPUDATA}(legacy_level_color_table[(legacy_level_mod10 << 2) + i])
+    // change sprite colors
+    ppu_set_addr($3F18)
+    for U i = 0; i < 4; i += 1
+        {PPUDATA}(legacy_level_color_table[(legacy_level_mod10 << 2) + i])
+
+fn copy_board_row_to_vram()
+    if S(vram_row) >= $15
+        return
+    ppu_set_addr_coords(12, 6+vram_row, 0)
+    for U i = 0; i < 10; i += 1
+        U cell = board_get_cell(board, i, vram_row)
+        {PPUDATA}(cell)
+    vram_row += 1
+    if S(vram_row) >= $14
+        vram_row = $20
 
 fn nmi_render()
     switch render_mode

@@ -21,6 +21,7 @@ vars /game
     U next_piece_id
 
     U vram_row = 0
+    U line_index = 0
     U game_render_flags = 0
     U completed_lines = 0
     U curtain_row

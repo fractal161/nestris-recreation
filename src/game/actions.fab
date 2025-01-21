@@ -26,18 +26,37 @@ fn game_action.lock_piece() U
         curtain_row = $F0
         mute_audio()
         return PLAY_STATE_GAME_OVER_CURTAIN
-    if vram_row < $20
+    if S(vram_row) < $20
         return PLAY_STATE_LOCK_PIECE
-    // TODO: actually add minos to the playfield
+    PieceTileset tileset = get_piece_tileset(active_piece_id)
+    for U i = 0; i < 4; i += 1
+        PieceTile tile = tileset.tiles[i]
+        U x = piece_x + tile.x_offset
+        U y = piece_y + tile.y_offset
+        board_set_cell(board, x, y, tile.tile_type)
+    line_index = 0
+    set_board_vram_row()
+    // TODO: updateMusicSpeed
     return PLAY_STATE_CHECK_FULL_LINES
 
+// HOW THIS WORKS:
+// every piece fits inside a 4x4 box constructed around its center.
+// the line index iterates through every row intersecting that box to check
+// for line clears
 fn game_action.check_full_lines() U
-    if vram_row < $20
+    if S(vram_row) < $20
         return PLAY_STATE_CHECK_FULL_LINES
-    // MM/game board_ptr = @board
-    // for U i = 0; i < 20; i += 1
-    //     U[10] row = read U[10](board_ptr)
-    return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
+    U row = 0
+    if S(piece_y) >= 2
+        row = piece_y - 2
+    
+    line_index += 1
+    if S(line_index) < $04
+        return PLAY_STATE_CHECK_FULL_LINES
+    // if completed_lines == 0
+    //     return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
+    // puf.play_sfx(puf_sfx_lockpiece)
+    return PLAY_STATE_UPDATE_STATS
 
 // does nothing, since play_state is increased during vblank
 fn game_action.wait_for_line_clear_anim() U
@@ -64,7 +83,7 @@ fn game_action.receive_garbage() U
     return PLAY_STATE_GET_NEXT_PIECE
 
 fn game_action.get_next_piece() U
-    if vram_row < $20
+    if S(vram_row) < $20
         return PLAY_STATE_GET_NEXT_PIECE
     gravity_timer = 0
     piece_y = 0

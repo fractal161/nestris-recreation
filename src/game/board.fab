@@ -1,7 +1,7 @@
 struct Board
     U[256] cells
 
-fn board_write_cell(Board board, U x, U y, U tile)
+fn board_set_cell(Board board, U x, U y, U tile)
 : +inline
     board.cells[U(10 * y) + x] = tile
 

@@ -12,7 +12,7 @@ fn handle_lr()
     // if equal, shift the piece and set it to 10
     if pads[0].held & (BUTTON_LEFT | BUTTON_RIGHT) > 0
         das_charge += 1
-        if das_charge == DAS_THRESHOLD()
+        if S(das_charge) >= DAS_THRESHOLD()
             das_charge = DAS_CHECKPOINT()
             try_shift_piece()
 
@@ -45,7 +45,7 @@ fn handle_ab()
 
 fn handle_gravity() U
     // initial delay behavior
-    if secondary_fall_timer >= $80
+    if S(secondary_fall_timer) < 0
         if pads[0].pressed & BUTTON_DOWN == 0
             secondary_fall_timer += 1
             return PLAY_STATE_GAME
@@ -77,7 +77,7 @@ fn pushdown_drop() U
 
 fn try_gravity_drop() U
     U gravity = get_gravity(level_number)
-    if gravity_timer < gravity
+    if S(gravity_timer) < gravity
         return PLAY_STATE_GAME
     return try_drop()
 
@@ -93,9 +93,9 @@ fn try_drop() U
 
 fn set_board_vram_row()
     U new_vram_row = 0
-    if piece_y > 2
+    if S(piece_y) >= 2
         new_vram_row = piece_y - 2
-    if new_vram_row < vram_row
+    if S(new_vram_row) < vram_row
         vram_row = new_vram_row
 
 fn get_gravity(U level) U

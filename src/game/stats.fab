@@ -35,7 +35,7 @@ fn handle_line_count()
             puf.play_sfx(puf_sfx_levelup)
     else
         lines_bcd.a -= completed_lines
-        if lines_bcd.a >= $80
+        if S(lines_bcd.a) < 0
             lines_bcd = 0
         else if lines_bcd.a & %1111 >= $0A
             lines_bcd -= 6
@@ -57,7 +57,7 @@ fn carry_bcd_uuu(UUU bcd) UUU
     return bcd
 
 fn handle_pushdown()
-    if pushdown < 2
+    if S(pushdown) < 2
         return
     score_bcd += pushdown - 1
     score_bcd = carry_bcd_uuu(score_bcd)
@@ -82,7 +82,8 @@ fn should_transition() Bool
         false_level <<= 1
         if lines_bcd.a & %1111 >= 5
             false_level += 1
-    return false_level > level_number
+    // TODO: verify that this replicates the long level
+    return S(level_number) < false_level
 
 ct U[256] legacy_level_display_table = U[](
     $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$10,$11,$12,$13,$14,$15,
