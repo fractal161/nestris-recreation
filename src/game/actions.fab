@@ -187,5 +187,35 @@ fn stage_active_piece_sprites()
         U sprite_y = 47 + (y << 3)
         oam_index = push_oam(oam_index, sprite_x, sprite_y, tile.tile_type, %00000010)
 
+
+/*
+
+T: (204, 119)
+J: (204, 119)
+Z: (204, 119)
+O: (208, 119)
+S: (204, 119)
+L: (204, 119)
+I: (208, 123)
+
+*/
+
+ct U[7] NEXT_PIECE_X = U[](
+    204, 204, 204, 208, 204, 204, 208
+)
+
+ct U[7] NEXT_PIECE_Y = U[](
+    119, 119, 119, 119, 119, 119, 123
+)
+
 // just load the sprite template lmao
 fn stage_next_piece_sprites()
+    if !show_next_piece
+        return
+    PieceTileset tileset = get_piece_tileset(next_piece_id)
+    U type = piece_id_to_type_table[next_piece_id]
+    for U i = 0; i < 4; i += 1
+        PieceTile tile = tileset.tiles[i]
+        U x = NEXT_PIECE_X[type] + (tile.x_offset << 3)
+        U y = NEXT_PIECE_Y[type] + (tile.y_offset << 3)
+        oam_index = push_oam(oam_index, x, y, tile.tile_type, %00000010)

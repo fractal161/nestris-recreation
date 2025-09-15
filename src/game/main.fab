@@ -1,3 +1,4 @@
+// separate from other game state vars because it persists
 vars
     Bool show_next_piece
 
