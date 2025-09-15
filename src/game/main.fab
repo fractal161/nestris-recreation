@@ -2,9 +2,10 @@ vars
     Bool show_next_piece
 
 // we allocate the full page to properly simulate the top row bug
-vars /game
+vars /board
 : +align
-    Board board = Board(U[256](GAME_TILE_EMPTY))
+    [256] board
+        U[256](GAME_TILE_EMPTY)
 
 vars /game
     Bool is_demo
@@ -84,7 +85,6 @@ fn handle_start_button()
 
 mode game(Bool is_demo_param)
 : nmi main_nmi
-: employs /game
     is_demo = is_demo_param
     if is_demo
         // TODO: all startDemo stuff

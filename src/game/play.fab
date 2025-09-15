@@ -115,6 +115,6 @@ fn is_position_valid() Bool
         // ensure y is in range
         if (y+2) >= 22
             return false
-        if board_get_cell(board, x, y) != GAME_TILE_EMPTY
+        if board_get_cell(@board, x, y) != GAME_TILE_EMPTY
             return false
     return true

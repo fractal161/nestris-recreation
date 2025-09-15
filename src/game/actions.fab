@@ -41,7 +41,7 @@ fn add_piece_to_board()
         U x = piece_x + tile.x_offset
         U y = piece_y + tile.y_offset
         // board_set_cell(board, x, y, tile.tile_type)
-        board.cells[U(10 * y) + x] = tile.tile_type
+        board_set_cell(@board, x, y, tile.tile_type)
 
 
 // every piece fits inside a 4x4 box constructed around its center.
@@ -62,11 +62,11 @@ fn game_action.check_full_lines() U
         completed_lines += 1
         completed_rows[line_index] = row
         // copy rows
-        for U i = row - 1; row >= 0; i -= 1
-            copy_row_from_above(i)
+        for U i = 0; i < row; i += 1
+            copy_row_from_above(row - 1 - i)
         // clear top row
         for U i = 0; i < 10; i += 1
-            board_set_cell(board, i, 0, GAME_TILE_EMPTY)
+            board_set_cell(@board, i, 0, GAME_TILE_EMPTY)
         active_piece_id = PIECE_ID_NONE
     else
         completed_rows[line_index] = 0
@@ -84,14 +84,14 @@ fn game_action.check_full_lines() U
 
 fn is_row_full(U row) U
     for U i = 0; i < 10; i += 1
-        if board.cells[U(10 * row) + i] == GAME_TILE_EMPTY
+        if board_get_cell(@board, i, row) == GAME_TILE_EMPTY
             return $00
     return $01
 
 fn copy_row_from_above(U row)
     for U j = 0; j < 10; j += 1
-        U cell = board_get_cell(board, j, row)
-        board_set_cell(board, j, row+1, cell)
+        U cell = board_get_cell(@board, j, row)
+        board_set_cell(@board, j, row+1, cell)
 
 // does nothing, since play_state is increased during vblank
 fn game_action.wait_for_line_clear_anim() U

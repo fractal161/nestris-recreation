@@ -60,7 +60,7 @@ fn copy_board_row_to_vram()
         return
     ppu_set_addr_coords(12, 6+vram_row, 0)
     for U i = 0; i < 10; i += 1
-        U cell = board_get_cell(board, i, vram_row)
+        U cell = board_get_cell(@board, i, vram_row)
         {PPUDATA}(cell)
     vram_row += 1
     if S(vram_row) >= $14

@@ -1,10 +1,7 @@
-struct Board
-    U[256] cells
-
-fn board_set_cell(Board board, U x, U y, U tile)
+fn board_set_cell(MM/board board, U x, U y, U tile)
 : +inline
-    board.cells[U(10 * y) + x] = tile
+    board[U(10 * y) + x] = tile
 
-fn board_get_cell(Board board, U x, U y) U
+fn board_get_cell(MM/board board, U x, U y) U
 : +inline
-    return board.cells[U(10 * y) + x]
+    return board[U(10 * y) + x]
