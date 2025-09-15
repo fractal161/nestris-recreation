@@ -97,7 +97,7 @@ mode game(Bool is_demo_param)
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
     ppu_upload_full_palette(@palette_game)
     load_nt(@nt_game)
-    ppu_set_addr_coords(24, 5, 0)
+    ppu_set_addr(ppu_addr_from_coords_ct(24, 5, 0))
     MM lb = @leaderboard_a
     if game_type == GAME_TYPE_B
         lb = @leaderboard_b
@@ -108,7 +108,7 @@ mode game(Bool is_demo_param)
 
     if game_type == GAME_TYPE_B
         // mark as b-type
-        ppu_set_addr_coords(3, 4, 0)
+        ppu_set_addr(ppu_addr_from_coords_ct(3, 4, 0))
         {PPUDATA}($0B)
         // TODO: patch in height box
 

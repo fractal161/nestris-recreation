@@ -3,37 +3,37 @@
 // File for loading all skin-related data into their corresponding groups
 // implemented as a macro so the skin could be specified as a parameter
 
-omni data
+omni data /nt
     [1024] nt_legal
         file(raw, #"skin"# "/legal/screen.nam")
-    [32] palette_legal
-        file(raw, #"skin"# "/legal/palette.pal")
-
     [1024] nt_title
         file(raw, #"skin"# "/title/screen.nam")
-    [32] palette_title
-        file(raw, #"skin"# "/title/palette.pal")
-
     [1024] nt_type_menu
         file(raw, #"skin"# "/type_menu/screen.nam")
-    [32] palette_type_menu
-        file(raw, #"skin"# "/type_menu/palette.pal")
-
     [1024] nt_level_menu
         file(raw, #"skin"# "/level_menu/screen.nam")
+    [1024] nt_game
+        file(raw, #"skin"# "/game/screen.nam")
+
+// TODO: assign this to the /palette group when allowed
+// for ppu_upload_full_palette and the like
+omni data
+    [32] palette_legal
+        file(raw, #"skin"# "/legal/palette.pal")
+    [32] palette_title
+        file(raw, #"skin"# "/title/palette.pal")
+    [32] palette_type_menu
+        file(raw, #"skin"# "/type_menu/palette.pal")
     [32] palette_a_level_menu
         file(raw, #"skin"# "/level_menu/palette_a.pal")
     [32] palette_b_level_menu
         file(raw, #"skin"# "/level_menu/palette_b.pal")
-
-    [1024] nt_game
-        file(raw, #"skin"# "/game/screen.nam")
     [32] palette_game
         file(raw, #"skin"# "/game/palette.pal")
 
+omni data
     [6 * sizeof LeaderboardEntry] default_high_scores
         file(raw, #"skin"# "/default_high_scores.bin")
-
     [] leaderboard_charmap
         file(raw, #"skin"# "/leaderboard_charmap.bin")
 

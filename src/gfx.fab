@@ -1,15 +1,15 @@
 // it seems the normal ppu_upload_palette function is difficult to use with
 // PAAs, which is how we're loading in palettes
-fn ppu_upload_full_palette(CC palette_ptr)
+fn ppu_upload_full_palette(CC/palette palette_ptr)
     copy_data_to_ppu(palette_ptr, $3F00, 32)
 
-fn ppu_upload_bg_palette(CC palette_ptr)
+fn ppu_upload_bg_palette(CC/palette palette_ptr)
     copy_data_to_ppu(palette_ptr, $3F00, 16)
 
-fn ppu_upload_spr_palette(CC palette_ptr)
+fn ppu_upload_spr_palette(CC/palette palette_ptr)
     copy_data_to_ppu(palette_ptr, $3F10, 16)
 
-fn copy_data_to_ppu(CC data_ptr, AA start_addr, U length)
+fn copy_data_to_ppu(CC/palette/nt data_ptr, AA start_addr, U length)
 : -inline
     {PPUSTATUS}()
     {PPUADDR}(start_addr.b)
@@ -53,10 +53,14 @@ fn reset_nametable(U nt)
     ppu_upload_fill($FF, 960)
     ppu_upload_fill($00, 64)
 
-fn load_nt(CC nt_ptr)
+// declared here to prevent compiler warnings. it is actually declared in
+// skin.macrofab
+data /nt
+
+fn load_nt(CCC/nt nt)
     ppu_reset_addr($2000)
     for UU i = 0; i < 1024; i += 1
-        {PPUDATA}(nt_ptr{i})
+        {PPUDATA}(nt{i})
 
 // assumes PPUADDR has already been set
 fn print_byte(U value)
@@ -67,5 +71,9 @@ fn ppu_addr_from_coords(U x, U y, U nt) UU
 : +inline
     return UU($2000) + UU($400 * nt) + UU($20 * y) + UU(x)
 
+ct fn ppu_addr_from_coords_ct(U x, U y, U nt) UU
+    return UU($2000) + UU($400 * nt) + UU($20 * y) + UU(x)
+
 fn ppu_set_addr_coords(U x, U y, U nt)
+: +inline
     ppu_set_addr(ppu_addr_from_coords(x, y, nt))

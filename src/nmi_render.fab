@@ -7,6 +7,12 @@ fn render.menu_screens()
     ppu_ctrl &= %11111100 | PPUCTRL_NT_2000
     {PPUCTRL}(ppu_ctrl)
 
+ct fn PIECE_STAT_ROW_TABLE() UU[8]
+    UU[8] table
+    for U i = 0; i < 8; i += 1
+        table[i] = ppu_addr_from_coords_ct(6, 12+(i << 1), 0)
+    return table
+
 fn render.game()
     if play_state == PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
         // TODO: AAAAAAAAAAAA
@@ -16,24 +22,23 @@ fn render.game()
         for U i = 0; i < 4; i += 1
             copy_board_row_to_vram()
     if game_render_flags & GAME_RENDER_LINES > 0
-        ppu_set_addr_coords(19, 3, 0)
+        ppu_set_addr(ppu_addr_from_coords_ct(19, 3, 0))
         {PPUDATA}(lines_bcd.b)
         print_byte(lines_bcd.a)
     if game_render_flags & GAME_RENDER_LEVEL > 0
-        ppu_set_addr_coords(26, 21, 0)
+        ppu_set_addr(ppu_addr_from_coords_ct(26, 21, 0))
         U level_display = legacy_level_display_table[level_number]
         print_byte(level_display)
         update_game_palette()
     if game_render_flags & GAME_RENDER_SCORE > 0
-        ppu_set_addr_coords(24, 8, 0)
+        ppu_set_addr(ppu_addr_from_coords_ct(24, 8, 0))
         print_byte(score_bcd.c)
         print_byte(score_bcd.b)
         print_byte(score_bcd.a)
     if game_render_flags & GAME_RENDER_PIECE_COUNT > 0
         U piece_type = piece_id_to_type_table[active_piece_id]
+        ppu_set_addr(PIECE_STAT_ROW_TABLE()[piece_type])
         UU count = piece_counts_bcd[piece_type]
-        U y = 12 + (piece_type << 1)
-        ppu_set_addr_coords(6, y, 0)
         {PPUDATA}(count.b)
         print_byte(count.a)
     // clear all flags at once
@@ -55,10 +60,16 @@ fn update_game_palette()
     for U i = 0; i < 4; i += 1
         {PPUDATA}(legacy_level_color_table[(legacy_level_mod10 << 2) + i])
 
+ct fn VRAM_ROW_TABLE() UU[$20]
+    UU[$20] table
+    for U i = 0; i < $20; i += 1
+        table[i] = ppu_addr_from_coords_ct(12, i, 0)
+    return table
+
 fn copy_board_row_to_vram()
     if S(vram_row) >= $15
         return
-    ppu_set_addr_coords(12, 6+vram_row, 0)
+    ppu_set_addr(VRAM_ROW_TABLE()[6+vram_row])
     for U i = 0; i < 10; i += 1
         U cell = board_get_cell(@board, i, vram_row)
         {PPUDATA}(cell)

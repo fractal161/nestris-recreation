@@ -115,7 +115,7 @@ mode level_menu()
     if game_type == GAME_TYPE_A
         ppu_upload_full_palette(@palette_a_level_menu)
         // set to A-type
-        ppu_set_addr_coords(13, 3, 0)
+        ppu_set_addr(ppu_addr_from_coords_ct(13, 3, 0))
         {PPUDATA}($0A)
         // erase height
         for U i = 0; i < 8; i += 1
