@@ -1,20 +1,6 @@
 vars /game
     U play_state
 
-// each game action returns the resulting state
-ct Fn.game_action[10] game_actions = Fn.game_action[](
-    @(game_action.player_control), // PLAY_STATE_GAME
-    @(game_action.lock_piece), // PLAY_STATE_LOCK_PIECE
-    @(game_action.check_full_lines), // PLAY_STATE_CHECK_FULL_LINES
-    @(game_action.wait_for_line_clear_anim),
-    @(game_action.update_stats),
-    @(game_action.check_b_type_done),
-    @(game_action.receive_garbage),
-    @(game_action.get_next_piece),
-    @(game_action.unknown_noop),
-    @(game_action.game_over_curtain),
-)
-
 fn game_action.player_control() U
     handle_lr()
     handle_ab()
@@ -33,7 +19,7 @@ fn game_action.lock_piece() U
         puf.play_sfx(puf_sfx_curtain)
         curtain_row = -$10
         mute_audio()
-        return PLAY_STATE_GAME_OVER_CURTAIN
+        return PLAY_STATE_CURTAIN
     if S(vram_row) < $20
         return PLAY_STATE_LOCK_PIECE
     add_piece_to_board()
@@ -141,17 +127,29 @@ fn game_action.get_next_piece() U
 fn game_action.unknown_noop() U
     return PLAY_STATE_UNKNOWN_NOOP
 
-fn game_action.game_over_curtain() U
+fn game_action.curtain() U
     if curtain_row == $14
         // TODO: @curtain_finished
-        return PLAY_STATE_GAME_OVER_CURTAIN
+        if VERSION == VERSION_NWC
+            // TODO: wtf is this actually correct ask zohass
+            while true
+                update_audio_and_nmi_wait()
+        // for scores less than 30k, wait for start press
+        if score_bcd.c < 3
+            if pads[0].pressed == BUTTON_START
+                return PLAY_STATE_GAME_OVER
+            return PLAY_STATE_CURTAIN
+        // otherwise, go to victory screen
+        wait(ENDING_SLEEP_TIME_1())
+        goto mode victory()
+        : preserves
     // only update curtain when frame counter is a multiple of 4
     if frame_counter.a & %11 != 0
-        return PLAY_STATE_GAME_OVER_CURTAIN
+        return PLAY_STATE_CURTAIN
     // negative row is like a timer
     if curtain_row < 0
         curtain_row += 1
-        return PLAY_STATE_GAME_OVER_CURTAIN
+        return PLAY_STATE_CURTAIN
     // hide current piece sprite
     active_piece_id = PIECE_ID_NONE
     // draw curtain_row
@@ -159,42 +157,24 @@ fn game_action.game_over_curtain() U
         board_set_cell(@board, i, U(curtain_row), CURTAIN_TILE)
     vram_row = U(curtain_row)
     curtain_row += 1
-    return PLAY_STATE_GAME_OVER_CURTAIN
+    return PLAY_STATE_CURTAIN
 
+// each game action returns the resulting state
+ct Fn.game_action[10] game_actions = Fn.game_action[](
+    @(game_action.player_control), // PLAY_STATE_GAME
+    @(game_action.lock_piece), // PLAY_STATE_LOCK_PIECE
+    @(game_action.check_full_lines), // PLAY_STATE_CHECK_FULL_LINES
+    @(game_action.wait_for_line_clear_anim),
+    @(game_action.update_stats),
+    @(game_action.check_b_type_done),
+    @(game_action.receive_garbage),
+    @(game_action.get_next_piece),
+    @(game_action.unknown_noop),
+    @(game_action.curtain),
+)
 
 fn update_player()
-    switch play_state
-        case PLAY_STATE_GAME
-            play_state = game_action.player_control()
-            break
-        case PLAY_STATE_LOCK_PIECE
-            play_state = game_action.lock_piece()
-            break
-        case PLAY_STATE_CHECK_FULL_LINES
-            play_state = game_action.check_full_lines()
-            break
-        case PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
-            play_state = game_action.wait_for_line_clear_anim()
-            break
-        case PLAY_STATE_UPDATE_STATS
-            play_state = game_action.update_stats()
-            break
-        case PLAY_STATE_CHECK_B_TYPE_DONE
-            play_state = game_action.check_b_type_done()
-            break
-        case PLAY_STATE_RECEIVE_GARBAGE
-            play_state = game_action.receive_garbage()
-            break
-        case PLAY_STATE_GET_NEXT_PIECE
-            play_state = game_action.get_next_piece()
-            break
-        case PLAY_STATE_UNKNOWN_NOOP
-            play_state = game_action.unknown_noop()
-            break
-        case PLAY_STATE_GAME_OVER_CURTAIN
-            play_state = game_action.game_over_curtain()
-            break
-    // play_state = game_actions[play_state]()
+    play_state = game_actions[play_state]()
     stage_active_piece_sprites()
     stage_next_piece_sprites()
 

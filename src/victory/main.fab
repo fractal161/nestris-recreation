@@ -1,0 +1,5 @@
+// entry point is endingAnimation
+mode victory()
+: nmi main_nmi
+    while true
+        nmi

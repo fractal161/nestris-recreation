@@ -10,7 +10,6 @@ vars /board
 
 vars /game
     Bool is_demo
-    Bool game_over = false
 
     U piece_x = 5
     U piece_y = 0
@@ -38,8 +37,9 @@ fn update_timers_and_check_select()
         show_next_piece = !show_next_piece
 
 fn handle_game_over()
-    if !game_over
+    if play_state != PLAY_STATE_GAME_OVER
         return
+    // actual game over logic
     render_mode = RENDER_GAME
     // TODO: in the original game, the logic is only called when playState == 0, but this happens for like 2 frames in total and the behavior is weird so i'm setting this to a separate variable for now and we'll get to it later
 
@@ -62,7 +62,7 @@ fn handle_start_button()
         goto mode title()
         : preserves
     // prevent pausing during curtain/congratulations
-    if render_mode != RENDER_GAME || play_state == PLAY_STATE_GAME_OVER_CURTAIN
+    if render_mode != RENDER_GAME || play_state == PLAY_STATE_CURTAIN
         return
     // todo: pause music
     render_mode = RENDER_MENU_SCREEN
