@@ -58,6 +58,7 @@ mode type_menu()
     // make both sprite/bg point to chr 0
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
     safe_enable_rendering()
+    allegro = false
     set_music()
     while true
         handle_type_menu_input()

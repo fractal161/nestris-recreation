@@ -1,7 +1,9 @@
+// TODO: check that this is used efficiently (to minimize x10 usage)
 fn board_set_cell(MM/board board, U x, U y, U tile)
 : +inline
     board[U(10 * y) + x] = tile
 
+// TODO: check that this is used efficiently (to minimize x10 usage)
 fn board_get_cell(MM/board board, U x, U y) U
 : +inline
     return board[U(10 * y) + x]

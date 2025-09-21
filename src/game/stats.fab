@@ -52,7 +52,7 @@ fn carry_bcd_uuu(UUU bcd) UUU
     if bcd.b >= $A0
         bcd.b += $60
         bcd.c += 1
-    if bcd.c & %111 >= $0A
+    if bcd.c & %1111 >= $0A
         bcd.c += $06
     return bcd
 

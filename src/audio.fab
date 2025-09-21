@@ -1,5 +1,6 @@
 vars
     U music_type = 0
+    Bool allegro
 
 // TODO: may want to have a flag system where we set playback flags
 fn mute_audio()
@@ -14,8 +15,9 @@ fn update_audio_and_nmi_wait()
     nmi
 
 fn set_music()
-    // if music_type < NUM_MUSIC_TRACKS
-    //     U speed = puf.play_track(music_type)
-    //     // TODO: allegro things
-    // else
-    //     puf.stop(0)
+    if music_type < NUM_MUSIC_TRACKS
+        U speed = puf.play_track(music_type)
+        if allegro
+            puf.set_speed(speed << 1)
+    else
+        puf.stop(0)

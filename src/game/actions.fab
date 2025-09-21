@@ -20,10 +20,18 @@ fn game_action.player_control() U
     handle_ab()
     return handle_gravity()
 
+fn set_allegro()
+    ct U ALLEGRO_ROW = 5
+    allegro = false
+    for U i = 0; i < 10; i += 1
+        if board_get_cell(@board, i, ALLEGRO_ROW) != GAME_TILE_EMPTY
+            allegro = true
+    set_music()
+
 fn game_action.lock_piece() U
     if !is_position_valid()
-        // TODO: store $02 in sfxSlot0Init
-        curtain_row = $F0
+        puf.play_sfx(puf_sfx_curtain)
+        curtain_row = -$10
         mute_audio()
         return PLAY_STATE_GAME_OVER_CURTAIN
     if S(vram_row) < $20
@@ -31,7 +39,7 @@ fn game_action.lock_piece() U
     add_piece_to_board()
     line_index = 0
     set_board_vram_row()
-    // TODO: updateMusicSpeed
+    set_allegro()
     return PLAY_STATE_CHECK_FULL_LINES
 
 fn add_piece_to_board()
@@ -40,7 +48,6 @@ fn add_piece_to_board()
         PieceTile tile = tileset.tiles[i]
         U x = piece_x + tile.x_offset
         U y = piece_y + tile.y_offset
-        // board_set_cell(board, x, y, tile.tile_type)
         board_set_cell(@board, x, y, tile.tile_type)
 
 
@@ -98,7 +105,7 @@ fn game_action.wait_for_line_clear_anim() U
     return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
 
 fn game_action.update_stats() U
-    // TODO: allegro check
+    set_allegro()
     handle_line_count()
     handle_pushdown()
     handle_line_clear_points()
@@ -135,6 +142,23 @@ fn game_action.unknown_noop() U
     return PLAY_STATE_UNKNOWN_NOOP
 
 fn game_action.game_over_curtain() U
+    if curtain_row == $14
+        // TODO: @curtain_finished
+        return PLAY_STATE_GAME_OVER_CURTAIN
+    // only update curtain when frame counter is a multiple of 4
+    if frame_counter.a & %11 != 0
+        return PLAY_STATE_GAME_OVER_CURTAIN
+    // negative row is like a timer
+    if curtain_row < 0
+        curtain_row += 1
+        return PLAY_STATE_GAME_OVER_CURTAIN
+    // hide current piece sprite
+    active_piece_id = PIECE_ID_NONE
+    // draw curtain_row
+    for U i = 0; i < 10; i += 1
+        board_set_cell(@board, i, U(curtain_row), CURTAIN_TILE)
+    vram_row = U(curtain_row)
+    curtain_row += 1
     return PLAY_STATE_GAME_OVER_CURTAIN
 
 
@@ -187,19 +211,6 @@ fn stage_active_piece_sprites()
         U sprite_y = 47 + (y << 3)
         oam_index = push_oam(oam_index, sprite_x, sprite_y, tile.tile_type, %00000010)
 
-
-/*
-
-T: (204, 119)
-J: (204, 119)
-Z: (204, 119)
-O: (208, 119)
-S: (204, 119)
-L: (204, 119)
-I: (208, 123)
-
-*/
-
 ct U[7] NEXT_PIECE_X = U[](
     204, 204, 204, 208, 204, 204, 208
 )
@@ -208,7 +219,6 @@ ct U[7] NEXT_PIECE_Y = U[](
     119, 119, 119, 119, 119, 119, 123
 )
 
-// just load the sprite template lmao
 fn stage_next_piece_sprites()
     if !show_next_piece
         return

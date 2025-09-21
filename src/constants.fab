@@ -36,6 +36,9 @@ ct U MENU_TILE_ARROW = $27
 
 ct U LEVEL_TILE_CURSOR = $FC
 
+// TODO: move a bunch of these to skin
+ct U CURTAIN_TILE = $4F
+
 ct U GAME_TILE_1 = $7B
 ct U GAME_TILE_2 = $7C
 ct U GAME_TILE_3 = $7D

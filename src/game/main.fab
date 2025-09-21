@@ -28,9 +28,7 @@ vars /game
     U completed_lines = 0
     U[4] completed_rows
     U line_clear_animation_step = 0
-    U curtain_row
-
-    Bool allegro = false
+    S curtain_row
 
     // demo temp vars
 
@@ -136,6 +134,8 @@ mode game(Bool is_demo_param)
     update_audio_and_nmi_wait()
     if game_type == GAME_TYPE_B
         // TODO: init b-type playfield
+
+    allegro = false
     set_music()
 
     while true
