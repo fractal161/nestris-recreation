@@ -50,8 +50,8 @@ fn game_action.check_full_lines() U
     row += line_index
 
     if is_row_full(row) == $01
-        // TODO: store $0A in sfxslot1, which is "tetrisclear", but i still
-        // don't know what the difference is
+        // this is like the repeated sound?
+        puf.play_sfx(puf_sfx_tetrisclear)
         completed_lines += 1
         completed_rows[line_index] = row
         // copy rows
@@ -67,7 +67,7 @@ fn game_action.check_full_lines() U
     if S(line_index) < $04
         return PLAY_STATE_CHECK_FULL_LINES
     vram_row = 0
-    line_clear_animation_step = 0
+    line_clear_anim_step = 0
     if completed_lines == 4
         puf.play_sfx(puf_sfx_tetrisinit)
     if completed_lines > 0
@@ -129,9 +129,8 @@ fn game_action.unknown_noop() U
 
 fn game_action.curtain() U
     if curtain_row == $14
-        // TODO: @curtain_finished
         if VERSION == VERSION_NWC
-            // TODO: wtf is this actually correct ask zohass
+            // loops until external interrupt is called
             while true
                 update_audio_and_nmi_wait()
         // for scores less than 30k, wait for start press

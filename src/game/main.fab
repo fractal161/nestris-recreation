@@ -26,7 +26,7 @@ vars /game
     U game_render_flags = 0
     U completed_lines = 0
     U[4] completed_rows
-    U line_clear_animation_step = 0
+    U line_clear_anim_step = 0 // rowY in disasm
     S curtain_row
 
     // demo temp vars

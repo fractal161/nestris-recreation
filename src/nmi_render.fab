@@ -13,11 +13,31 @@ ct fn PIECE_STAT_ROW_TABLE() UU[8]
         table[i] = ppu_addr_from_coords_ct(6, 12+(i << 1), 0)
     return table
 
+fn update_line_clear_animation()
+    if frame_counter.a & %11 != 0
+        return
+    for U i = 0; i < 4; i += 1
+        if completed_rows[i] == 0
+            continue
+        // set address to middle of row
+        UU ppu_addr = VRAM_ROW_TABLE()[6+completed_rows[i]] + 4
+        // clear out left column
+        ppu_addr -= line_clear_anim_step
+        ppu_set_addr(ppu_addr)
+        {PPUDATA}($FF)
+        // clear out right column
+        ppu_addr += 1 + (line_clear_anim_step << 1)
+        ppu_set_addr(ppu_addr)
+        {PPUDATA}($FF)
+
+    line_clear_anim_step += 1
+    if line_clear_anim_step == 5
+        play_state = PLAY_STATE_UPDATE_STATS
+
 fn render.game()
     if play_state == PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
-        // TODO: AAAAAAAAAAAA
-        // this is temporary
-        play_state = PLAY_STATE_UPDATE_STATS
+        update_line_clear_animation()
+        vram_row = 0
     else
         for U i = 0; i < 4; i += 1
             copy_board_row_to_vram()
