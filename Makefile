@@ -11,6 +11,7 @@ SKIN_FILES := $(shell find ${SKIN_PATH} -type f)
 
 $(BUILD_PATH): $(ROM).cfg config.fab $(SRC_FILES) $(SKIN_FILES) | buildDir
 	./nesfab/nesfab $(ROM).cfg
+	python scripts/patch_mmc1.py
 
 .PHONY: clean run release buildDir releaseDir
 
