@@ -54,9 +54,10 @@ fn check_for_reset_key() Bool
         : preserves
     return pads[0].held == BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT
 
+ct U[5] PAUSE_TILES = U[]($19, $0A, $1E, $1C, $0E)
+
 fn handle_start_button()
-    return
-    if VERSION == VERSION_NWC || pads[0].held != BUTTON_START
+    if VERSION == VERSION_NWC || pads[0].pressed != BUTTON_START
         return
     if is_demo
         goto mode title()
@@ -64,14 +65,17 @@ fn handle_start_button()
     // prevent pausing during curtain/congratulations
     if render_mode != RENDER_GAME || play_state == PLAY_STATE_CURTAIN
         return
-    // todo: pause music
+    puf.play_sfx(puf_sfx_pause)
     render_mode = RENDER_MENU_SCREEN
     update_audio_and_nmi_wait()
     ppu_mask = PPUMASK_SPR_ON | PPUMASK_NO_CLIP
     {PPUMASK}(ppu_mask)
     hide_oam(0)
     do while true
-        // TODO: stage pause sprite
+        // stage pause sprite
+        for U i = 0; i < 5; i += 1
+            U x = $70 + (i << 3)
+            oam_index = push_oam(oam_index, x, $77, PAUSE_TILES[i], %00000000)
         if pads[0].pressed == BUTTON_START
             break
         update_audio_and_nmi_wait()
