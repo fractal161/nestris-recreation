@@ -8,7 +8,8 @@ fn mute_audio()
     puf.process(0)
 
 fn update_audio()
-    puf.process(PUF_DEFAULT)
+    if !DEBUG
+        puf.process(PUF_DEFAULT)
 
 fn update_audio_and_nmi_wait()
     update_audio()

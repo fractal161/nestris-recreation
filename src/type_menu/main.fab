@@ -63,4 +63,4 @@ mode type_menu()
     while true
         handle_type_menu_input()
         stage_type_menu_arrow_sprites()
-        nmi
+        update_audio_and_nmi_wait()

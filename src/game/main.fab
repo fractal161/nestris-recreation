@@ -39,9 +39,14 @@ fn update_timers_and_check_select()
 fn handle_game_over()
     if play_state != PLAY_STATE_GAME_OVER
         return
-    // actual game over logic
     render_mode = RENDER_GAME
-    // TODO: in the original game, the logic is only called when playState == 0, but this happens for like 2 frames in total and the behavior is weird so i'm setting this to a separate variable for now and we'll get to it later
+    // TODO: handleHighScoreIfNecessary
+    do for U i = 0; i != 0; i += 1
+        @board[i] = GAME_TILE_EMPTY
+    play_state = PLAY_STATE_GAME
+    update_audio_and_nmi_wait()
+    goto mode level_menu()
+    : preserves
 
 // returns true if we should follow the dlr bug
 fn check_for_reset_key() Bool
@@ -60,12 +65,13 @@ fn handle_start_button()
     if VERSION == VERSION_NWC || pads[0].pressed != BUTTON_START
         return
     if is_demo
-        goto mode title()
+        goto mode type_menu()
         : preserves
     // prevent pausing during curtain/congratulations
-    if render_mode != RENDER_GAME || play_state == PLAY_STATE_CURTAIN
+    if render_mode != RENDER_GAME || play_state >= PLAY_STATE_CURTAIN
         return
     puf.play_sfx(puf_sfx_pause)
+    puf.stop($00)
     render_mode = RENDER_MENU_SCREEN
     update_audio_and_nmi_wait()
     ppu_mask = PPUMASK_SPR_ON | PPUMASK_NO_CLIP
@@ -83,6 +89,7 @@ fn handle_start_button()
     ppu_mask = PPUMASK_ON | PPUMASK_NO_CLIP
     {PPUMASK}(ppu_mask)
     // resume play
+    set_music()
     vram_row = 0
     render_mode = RENDER_GAME
 
@@ -116,7 +123,6 @@ mode game(Bool is_demo_param)
         // TODO: patch in height box
 
     safe_enable_rendering()
-    play_state = PLAY_STATE_GAME
     if is_demo
         level_number = 0
     else

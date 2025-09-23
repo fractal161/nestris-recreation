@@ -1,5 +1,5 @@
 vars /game
-    U play_state
+    U play_state = PLAY_STATE_GAME
 
 fn game_action.player_control() U
     handle_lr()
@@ -8,11 +8,13 @@ fn game_action.player_control() U
 
 fn set_allegro()
     ct U ALLEGRO_ROW = 5
+    Bool old_allegro = allegro
     allegro = false
     for U i = 0; i < 10; i += 1
         if board_get_cell(@board, i, ALLEGRO_ROW) != GAME_TILE_EMPTY
             allegro = true
-    set_music()
+    if allegro != old_allegro
+        set_music()
 
 fn game_action.lock_piece() U
     if !is_position_valid()
