@@ -64,7 +64,15 @@ fn render.game()
     // clear all flags at once
     game_render_flags &= !(GAME_RENDER_LINES | GAME_RENDER_LEVEL |
         GAME_RENDER_SCORE | GAME_RENDER_PIECE_COUNT)
-    // TODO: tetris flash
+    // tetris flash
+    ppu_set_addr($3F0E)
+    U flash_color = $00
+    if completed_lines == 4
+        if frame_counter & %11 == 0
+            flash_color = $30
+        if frame_counter & %111 == 0
+            puf.play_sfx(puf_sfx_tetrisclear)
+    {PPUDATA}(flash_color)
 
 fn update_game_palette()
     // reimplement glitched color behavior
