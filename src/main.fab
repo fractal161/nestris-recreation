@@ -15,7 +15,7 @@ vars
     U[5] runtime_signature
 
 
-fn init_high_scores()
+fn init_leaderboard()
     CC default_ptr = @default_high_scores
     MM lb_ptr = @leaderboard_a
     for U i = 0; i < 3; i += 1
@@ -59,7 +59,7 @@ mode main()
     state(MMC1_CHR_BANK | MMC1_MIRROR_1_LOWER)
     for U i = 0; i < 5; i += 1
         if runtime_signature[i] != reference_signature[i]
-            init_high_scores()
+            init_leaderboard()
     runtime_signature = reference_signature
     ppu_set_scroll(0, 0)
     ppu_ctrl = PPUCTRL_NMI_ON

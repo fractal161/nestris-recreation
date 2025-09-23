@@ -36,11 +36,37 @@ fn update_timers_and_check_select()
     if VERSION != VERSION_NWC && pads[0].pressed & BUTTON_SELECT > 0
         show_next_piece = !show_next_piece
 
+fn update_leaderboard()
+    // TODO: optimize (either memory or time idk which)
+    MM lb_ptr_tmp = @leaderboard_a
+    if game_type == GAME_TYPE_B
+        lb_ptr_tmp = @leaderboard_b
+    MM[3] lb_ptrs
+    S rank = 0
+    for U i = 0; i < 3; i += 1
+        lb_ptrs[i] = lb_ptr_tmp
+        LeaderboardEntry entry = read LeaderboardEntry(lb_ptr_tmp)
+        if score_bcd < entry.score_bcd
+            rank += 1
+    if rank == 3
+        return
+    // shift all ranks down (this is lowkey cool)
+    for S i = 1; i >= rank; i -= 1
+        lb_ptr_tmp = lb_ptrs[U(i)]
+        LeaderboardEntry entry = read LeaderboardEntry(lb_ptr_tmp)
+        write LeaderboardEntry(lb_ptr_tmp, entry)
+    LeaderboardEntry new_entry = LeaderboardEntry(
+        U[6]($00, $00, $00, $00, $00, $00), // dashes
+        score_bcd,
+        level_number
+    )
+    write LeaderboardEntry(lb_ptrs[U(rank)], new_entry)
+
 fn handle_game_over()
     if play_state != PLAY_STATE_GAME_OVER
         return
     render_mode = RENDER_GAME
-    // TODO: handleHighScoreIfNecessary
+    update_leaderboard()
     do for U i = 0; i != 0; i += 1
         @board[i] = GAME_TILE_EMPTY
     play_state = PLAY_STATE_GAME
@@ -112,9 +138,9 @@ mode game(Bool is_demo_param)
     if game_type == GAME_TYPE_B
         lb = @leaderboard_b
     LeaderboardEntry top_entry = read LeaderboardEntry(lb)
-    print_byte(top_entry.score_bcd.a)
-    print_byte(top_entry.score_bcd.b)
     print_byte(top_entry.score_bcd.c)
+    print_byte(top_entry.score_bcd.b)
+    print_byte(top_entry.score_bcd.a)
 
     if game_type == GAME_TYPE_B
         // mark as b-type

@@ -14,7 +14,7 @@ vars
     [30] leaderboard_a
     [30] leaderboard_b
 
-fn print_high_scores()
+fn print_leaderboard()
     MM leaderboard = @leaderboard_a
     if game_type == GAME_TYPE_B
         leaderboard = @leaderboard_b
@@ -24,9 +24,9 @@ fn print_high_scores()
         for U j = 0; j < 6; j += 1
             {PPUDATA}(@leaderboard_charmap[entry.name[j]])
         {PPUDATA}($FF)
-        print_byte(entry.score_bcd.a)
-        print_byte(entry.score_bcd.b)
         print_byte(entry.score_bcd.c)
+        print_byte(entry.score_bcd.b)
+        print_byte(entry.score_bcd.a)
         {PPUDATA}($FF)
         print_byte(entry.level)
 
@@ -124,7 +124,7 @@ mode level_menu()
                 {PPUDATA}($FF)
     else
         ppu_upload_full_palette(@palette_b_level_menu)
-    print_high_scores()
+    print_leaderboard()
     safe_enable_rendering()
     while start_level >= 10
         start_level -= 10

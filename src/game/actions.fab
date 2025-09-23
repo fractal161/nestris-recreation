@@ -136,7 +136,7 @@ fn game_action.curtain() U
             while true
                 update_audio_and_nmi_wait()
         // for scores less than 30k, wait for start press
-        if score_bcd.c < 3
+        if DEBUG || score_bcd.c < 3
             if pads[0].pressed == BUTTON_START
                 return PLAY_STATE_GAME_OVER
             return PLAY_STATE_CURTAIN
