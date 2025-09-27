@@ -78,7 +78,7 @@ fn handle_level_menu_input()
 fn stage_level_menu_cursor(U x, U y)
     for U i = 0; i < 2; i += 1
         for U j = 0; j < 2; j += 1
-            oam_index = push_oam(oam_index, x + (i << 3), y + (j << 3), LEVEL_TILE_CURSOR, ATTR_PRIORITY | %01)
+            oam_index = push_oam(oam_index, x + (i << 3), y + (j << 3), LEVEL_TILE_CURSOR, ATTR_PRIORITY | %00)
 
 // TODO: would like to generate these using coordinates
 ct U[6] height_cursor_x = U[]($9C,$AC,$BC,$9C,$AC,$BC)
@@ -106,14 +106,19 @@ mode level_menu()
     mute_audio()
     render_mode = RENDER_MENU_SCREEN
     safe_disable_rendering()
+    fence
     mmc1_set_chr_0(CHR_TITLE_MENU)
     // make both sprite/bg point to chr 0
     ppu_ctrl &= ~(PPUCTRL_SPR_PT_1000 | PPUCTRL_BG_PT_1000)
+    // palette updates need to be close to blanking
+    if game_type == GAME_TYPE_A
+        ppu_upload_full_palette(@palette_a_level_menu)
+    else
+        ppu_upload_full_palette(@palette_b_level_menu)
 
     load_nt(@nt_level_menu)
 
     if game_type == GAME_TYPE_A
-        ppu_upload_full_palette(@palette_a_level_menu)
         // set to A-type
         ppu_set_addr(ppu_addr_from_coords_ct(13, 3, 0))
         {PPUDATA}($0A)
@@ -122,9 +127,8 @@ mode level_menu()
             ppu_set_addr_coords(19, 7+i, 0)
             for U j = 0; j < 8; j += 1
                 {PPUDATA}($FF)
-    else
-        ppu_upload_full_palette(@palette_b_level_menu)
     print_leaderboard()
+    fence
     safe_enable_rendering()
     while start_level >= 10
         start_level -= 10

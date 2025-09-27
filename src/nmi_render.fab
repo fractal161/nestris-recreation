@@ -73,6 +73,8 @@ fn render.game()
         if frame_counter & %111 == 0
             puf.play_sfx(puf_sfx_tetrisclear)
     {PPUDATA}(flash_color)
+    // necessary to prevent a lag-frame type thing
+    ppu_set_scroll(0, 0)
 
 fn update_game_palette()
     // reimplement glitched color behavior
@@ -94,13 +96,52 @@ ct fn VRAM_ROW_TABLE() UU[$20]
         table[i] = ppu_addr_from_coords_ct(12, i, 0)
     return table
 
+asm fn copy_row_raw(U row_offset)
+: employs
+    default
+    ldx &row_offset
+    ldy &board,x
+    sty PPUDATA
+    ldy &board+1,x
+    sty PPUDATA
+    ldy &board+2,x
+    sty PPUDATA
+    ldy &board+3,x
+    sty PPUDATA
+    ldy &board+4,x
+    sty PPUDATA
+    ldy &board+5,x
+    sty PPUDATA
+    ldy &board+6,x
+    sty PPUDATA
+    ldy &board+7,x
+    sty PPUDATA
+    ldy &board+8,x
+    sty PPUDATA
+    ldy &board+9,x
+    sty PPUDATA
+    rts
+
 fn copy_board_row_to_vram()
     if S(vram_row) >= $15
         return
     ppu_set_addr(VRAM_ROW_TABLE()[6+vram_row])
-    for U i = 0; i < 10; i += 1
-        U cell = board_get_cell(@board, i, vram_row)
-        {PPUDATA}(cell)
+    // TODO: currently, this works by storing all offsets in tmps, then loading
+    // them iteratively, so it looks like
+    // ldx offset
+    // ldy board,x
+    // sty ppudata
+    // what we should target instead is something more like
+    // ldy board+0,x
+    // sty ppudata
+    // ldy board+1,x
+    // sty ppudata
+    // ...
+    // which should actually save like 3 scanlines since it's called 4x
+    U row_offset = U(10 * vram_row)
+    copy_row_raw(row_offset)
+    // for U i = 0; i < 10; i += 1
+    //     {PPUDATA}(@board[i + row_offset])
     vram_row += 1
     if S(vram_row) >= $14
         vram_row = $20

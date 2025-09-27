@@ -61,6 +61,7 @@ fn update_leaderboard()
         level_number
     )
     write LeaderboardEntry(lb_ptrs[U(rank)], new_entry)
+    // TODO: goto mode congrats_screen to enter scores
 
 fn handle_game_over()
     if play_state != PLAY_STATE_GAME_OVER

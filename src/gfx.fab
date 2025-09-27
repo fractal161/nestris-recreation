@@ -9,11 +9,9 @@ fn ppu_upload_bg_palette(CC/palette palette_ptr)
 fn ppu_upload_spr_palette(CC/palette palette_ptr)
     copy_data_to_ppu(palette_ptr, $3F10, 16)
 
-fn copy_data_to_ppu(CC/palette/nt data_ptr, AA start_addr, U length)
+fn copy_data_to_ppu(CC/palette/nt data_ptr, UU start_addr, U length)
 : -inline
-    {PPUSTATUS}()
-    {PPUADDR}(start_addr.b)
-    {PPUADDR}(start_addr.a)
+    ppu_reset_addr(start_addr)
 
     for U i = 0; i < length; i += 1
     : +unroll
@@ -21,12 +19,12 @@ fn copy_data_to_ppu(CC/palette/nt data_ptr, AA start_addr, U length)
 
 fn enable_ppu()
 : +inline
-    ppu_mask |= PPUMASK_ON
+    ppu_mask |= PPUMASK_ON | PPUMASK_NO_CLIP
     {PPUMASK}(ppu_mask)
 
 fn disable_ppu()
 : +inline
-    ppu_mask &= ~PPUMASK_ON
+    ppu_mask &= ~(PPUMASK_ON | PPUMASK_NO_CLIP)
     {PPUMASK}(ppu_mask)
 
 fn enable_rendering()
@@ -62,9 +60,15 @@ fn load_nt(CCC/nt nt)
     for UU i = 0; i < 1024; i += 1
         {PPUDATA}(nt{i})
 
+ct fn LSR_4_TABLE() U[256]
+    U[256] table
+    for Int i = 0; i < 256; i += 1
+        table[i] = i >> 4
+    return table
+
 // assumes PPUADDR has already been set
 fn print_byte(U value)
-    {PPUDATA}(value >> 4)
+    {PPUDATA}(LSR_4_TABLE()[value])
     {PPUDATA}(value & %1111)
 
 fn ppu_addr_from_coords(U x, U y, U nt) UU
