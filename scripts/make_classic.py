@@ -69,7 +69,10 @@ if __name__ == '__main__':
     with open('skins/classic/game/palette.pal', 'wb+') as f:
         f.write(extract_palette(prg, 0xACF3))
     with open('skins/classic/game/screen.nam', 'wb+') as f:
-        f.write(extract_nametable(prg, 0xBF3C))
+        nt = bytearray(extract_nametable(prg, 0xBF3C))
+        # patch in A for a-type
+        nt[32*4+3] = 0x0A
+        f.write(nt)
 
     with open('skins/classic/leaderboard_charmap.bin', 'wb+') as f:
         f.write(get_prg_range(prg, 0xA08C, 44))

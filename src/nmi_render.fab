@@ -126,20 +126,9 @@ fn copy_board_row_to_vram()
     if S(vram_row) >= $15
         return
     ppu_set_addr(VRAM_ROW_TABLE()[6+vram_row])
-    // TODO: currently, this works by storing all offsets in tmps, then loading
-    // them iteratively, so it looks like
-    // ldx offset
-    // ldy board,x
-    // sty ppudata
-    // what we should target instead is something more like
-    // ldy board+0,x
-    // sty ppudata
-    // ldy board+1,x
-    // sty ppudata
-    // ...
-    // which should actually save like 3 scanlines since it's called 4x
     U row_offset = U(10 * vram_row)
     copy_row_raw(row_offset)
+    // this is nicer but slower
     // for U i = 0; i < 10; i += 1
     //     {PPUDATA}(@board[i + row_offset])
     vram_row += 1
