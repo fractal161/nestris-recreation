@@ -10,9 +10,28 @@ function toBits(num,bits)
     return table.concat(t)
 end
 
+first_frame = nil
+
+function log(str)
+    emu.log(str)
+    print(str)
+end
+
 function log_write(addr, val)
-	local frame_num = emu.getState()["ppu.frameCount"]
-    emu.log(frame_num..": "..toBits(val, 8).." written to "..string.format("%x", addr))
+    local frame_num = emu.getState()["ppu.frameCount"]
+    if first_frame == nil then
+        first_frame = frame_num
+    end
+    log((frame_num-first_frame)..": "..toBits(val, 8).." written to "..string.format("%x", addr))
+end
+
+function reset_first_frame()
+    local frame_num = emu.getState()["ppu.frameCount"]
+    if first_frame ~= nil and frame_num - first_frame > 120 then
+        first_frame = nil
+        log("---")
+    end
 end
 
 emu.addMemoryCallback(log_write, 1, 0x4000, 0x400F)
+emu.addEventCallback(reset_first_frame, emu.eventType.nmi)
