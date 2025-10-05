@@ -52,8 +52,8 @@ mode high_score_entry(U rank)
     safe_disable_rendering()
     mmc1_set_chr_0(CHR_TITLE_MENU)
     // palette updates need to be close to blanking
-    // TODO: ppu_upload_full_palette(@palette_high_score_entry)
-    // TODO: load_nt(@nt_high_score_entry)
+    ppu_upload_full_palette(@palette_high_score_entry)
+    load_nt(@nt_high_score_entry)
     // game type letter
     ppu_set_addr(ppu_addr_from_coords_ct(13, 3, 0))
     {PPUDATA}($0A + game_type)

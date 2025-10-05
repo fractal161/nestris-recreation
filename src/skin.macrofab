@@ -14,6 +14,8 @@ omni data /nt
         file(raw, #"skin"# "/level_menu/screen.nam")
     [1024] nt_game
         file(raw, #"skin"# "/game/screen.nam")
+    [1024] nt_high_score_entry
+        file(raw, #"skin"# "/high_score_entry/screen.nam")
 
 // TODO: assign this to the /palette group when allowed
 // for ppu_upload_full_palette and the like
@@ -30,6 +32,8 @@ omni data
         file(raw, #"skin"# "/level_menu/palette_b.pal")
     [32] palette_game
         file(raw, #"skin"# "/game/palette.pal")
+    [32] palette_high_score_entry
+        file(raw, #"skin"# "/high_score_entry/palette.pal")
 
 omni data
     [6 * sizeof LeaderboardEntry] default_high_scores
