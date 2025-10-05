@@ -156,25 +156,31 @@ if __name__ == '__main__':
         # first phase init
         f.write(stride_bytes1)
         f.write(b'\x0F')
-        f.write(get_prg_range(prg, 0xE130, 4))
+        init_data1 = get_prg_range(prg, 0xE130, 4)
+        f.write(init_data1)
         # TODO: unsure if necessary to rewrite other regs
         # first phase
         for i in range(8):
             f.write(stride_bytes1)
-            f.write(b'\x05') # 4000 and 4002
+            f.write(b'\x0F')
             f.write(get_prg_byte(prg, 0xE4B0+i))
+            f.write(init_data1[1].to_bytes())
             f.write(get_prg_byte(prg, 0xE4C9+i))
+            f.write(init_data1[3].to_bytes())
         # second phase init
         stride_bytes2 = get_prg_byte(prg, 0xE42E+1)
         f.write(stride_bytes2)
         f.write(b'\x0F')
-        f.write(get_prg_range(prg, 0xE138, 4))
+        init_data2 = get_prg_range(prg, 0xE138, 4)
+        f.write(init_data2)
         # second phase
         for i in range(8):
             f.write(stride_bytes2)
-            f.write(b'\x05') # 4000 and 4002
+            f.write(b'\x0F')
             f.write(get_prg_byte(prg, 0xE4B0+i))
+            f.write(init_data2[1].to_bytes())
             f.write(get_prg_byte(prg, 0xE4B9+i))
+            f.write(init_data2[3].to_bytes())
         # finish
         f.write(b'\0')
 
@@ -225,12 +231,15 @@ if __name__ == '__main__':
         stride_bytes = get_prg_byte(prg, 0xE42E+1)
         f.write(stride_bytes)
         f.write(b'\x0F')
-        f.write(get_prg_range(prg, 0xE138, 4))
+        init_data = get_prg_range(prg, 0xE138, 4)
+        f.write(init_data)
         for i in range(8):
             f.write(stride_bytes)
-            f.write(b'\x05') # 4000 and 4002
+            f.write(b'\x0F')
             f.write(get_prg_byte(prg, 0xE4B0+i))
+            f.write(init_data[1].to_bytes())
             f.write(get_prg_byte(prg, 0xE4B9+i))
+            f.write(init_data[3].to_bytes())
         # finish
         f.write(b'\0')
 
@@ -239,12 +248,15 @@ if __name__ == '__main__':
         # init
         f.write(stride_bytes)
         f.write(b'\x0F')
-        f.write(get_prg_range(prg, 0xE134, 4))
+        init_data = get_prg_range(prg, 0xE134, 4)
+        f.write(init_data)
         for i in range(8):
             f.write(stride_bytes)
-            f.write(b'\x05') # 4000 and 4002
+            f.write(b'\x0F')
             f.write(get_prg_byte(prg, 0xE4B0+i))
+            f.write(init_data[1].to_bytes())
             f.write(get_prg_byte(prg, 0xE4C1+i))
+            f.write(init_data[3].to_bytes())
         # finish
         f.write(b'\0')
 

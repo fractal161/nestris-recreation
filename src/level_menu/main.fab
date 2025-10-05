@@ -28,7 +28,10 @@ fn print_leaderboard()
         print_byte(entry.score_bcd.b)
         print_byte(entry.score_bcd.a)
         {PPUDATA}($FF)
-        print_byte(entry.level)
+        // TODO: look up legacy table for this
+        U[2] level_bcd = u_to_dd(entry.level)
+        {PPUDATA}(level_bcd[1])
+        {PPUDATA}(level_bcd[0])
 
 // legacy function that shuffles the prng a bunch
 fn choose_random_hole()
