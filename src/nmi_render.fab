@@ -71,7 +71,7 @@ fn render.game()
         if frame_counter & %11 == 0
             flash_color = $30
         if frame_counter & %111 == 0
-            puf.play_sfx(puf_sfx_tetrisclear)
+            set_sfx(SFX_TETRIS_END)
     {PPUDATA}(flash_color)
     // necessary to prevent a lag-frame type thing
     ppu_set_scroll(0, 0)

@@ -67,7 +67,7 @@ mode main()
     ppu_mask = PPUMASK_NO_CLIP
     {PPUMASK}(ppu_mask)
     // init sound engine
-    puf.init(system)
+    // puf.init(system)
     // TODO: audio stuff, too tired to figure out
 
     // then some sort of stack protection that doesn't seem to work idk, i'm

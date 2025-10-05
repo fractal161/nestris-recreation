@@ -32,7 +32,7 @@ fn handle_line_count()
         if should_transition()
             level_number += 1
             game_render_flags |= GAME_RENDER_LEVEL
-            puf.play_sfx(puf_sfx_levelup)
+            set_sfx(SFX_LEVEL_UP)
     else
         lines_bcd.a -= completed_lines
         if S(lines_bcd.a) < 0

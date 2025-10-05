@@ -24,7 +24,7 @@ fn try_shift_piece()
         piece_x -= 1
 
     if is_position_valid()
-        puf.play_sfx(puf_sfx_shiftpiece)
+        set_sfx(SFX_SHIFT_PIECE)
     else
         piece_x = piece_x_tmp
         das_charge = DAS_THRESHOLD()
@@ -39,7 +39,7 @@ fn handle_ab()
     else
         return
     if is_position_valid()
-        puf.play_sfx(puf_sfx_rotatepiece)
+        set_sfx(SFX_ROTATE_PIECE)
     else
         active_piece_id = piece_id_tmp
 

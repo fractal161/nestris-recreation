@@ -42,36 +42,36 @@ fn handle_level_menu_input()
             start_height += 1
         if !is_selecting_height && start_level < 9
             start_level += 1
-        puf.play_sfx(puf_sfx_menuchange)
+        set_sfx(SFX_MENU_CHANGE)
     if pads[0].pressed == BUTTON_LEFT
         if is_selecting_height && start_height > 0
             start_height -= 1
         if !is_selecting_height && start_level > 0
             start_level -= 1
-        puf.play_sfx(puf_sfx_menuchange)
+        set_sfx(SFX_MENU_CHANGE)
     if pads[0].pressed == BUTTON_DOWN
         if is_selecting_height && start_height < 3
             start_height += 3
         if !is_selecting_height && start_level < 4
             start_level += 5
-        puf.play_sfx(puf_sfx_menuchange)
+        set_sfx(SFX_MENU_CHANGE)
     if pads[0].pressed == BUTTON_UP
         if is_selecting_height && start_height >= 3
             start_height -= 3
         if !is_selecting_height && start_level >= 5
             start_level -= 5
-        puf.play_sfx(puf_sfx_menuchange)
+        set_sfx(SFX_MENU_CHANGE)
     if game_type == GAME_TYPE_B && pads[0].pressed == BUTTON_A
         is_selecting_height = !is_selecting_height
-        puf.play_sfx(puf_sfx_menuchange)
+        set_sfx(SFX_MENU_CHANGE)
     if pads[0].pressed == BUTTON_START
         if pads[0].held == BUTTON_START | BUTTON_A
             start_level += 10
-        puf.play_sfx(puf_sfx_menuselect)
+        set_sfx(SFX_MENU_SELECT)
         goto mode game(false)
         : preserves
     if pads[0].pressed == BUTTON_B
-        puf.play_sfx(puf_sfx_menuselect)
+        set_sfx(SFX_MENU_SELECT)
         goto mode type_menu()
         : preserves
 

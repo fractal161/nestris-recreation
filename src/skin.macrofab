@@ -38,8 +38,38 @@ omni data
         file(raw, #"skin"# "/leaderboard_charmap.bin")
 
 // audio
-audio(puf1_music)
-audio(puf1_sfx, #"skin"# "/sfx.txt", #"skin"# "/sfx.nsf")
+// puf1 didn't work out :(
+// audio(puf1_music)
+// audio(puf1_sfx, #"skin"# "/sfx.txt", #"skin"# "/sfx.nsf")
+
+omni data /sfx
+    // sq1
+    [] sfx_menu_change
+        file(raw, #"skin"# "/sfx/menu_change.bin")
+    [] sfx_menu_select
+        file(raw, #"skin"# "/sfx/menu_select.bin")
+    [] sfx_shift_piece
+        file(raw, #"skin"# "/sfx/shift_piece.bin")
+    [] sfx_tetris_clear
+        file(raw, #"skin"# "/sfx/tetris_clear.bin")
+    [] sfx_rotate_piece
+        file(raw, #"skin"# "/sfx/rotate_piece.bin")
+    [] sfx_level_up
+        file(raw, #"skin"# "/sfx/level_up.bin")
+    [] sfx_lock_piece
+        file(raw, #"skin"# "/sfx/lock_piece.bin")
+    [] sfx_tetris_end
+        file(raw, #"skin"# "/sfx/tetris_end.bin")
+    [] sfx_line_clear
+        file(raw, #"skin"# "/sfx/line_clear.bin")
+    [] sfx_pause
+        file(raw, #"skin"# "/sfx/pause.bin")
+
+    // noise
+    [] sfx_curtain
+        file(raw, #"skin"# "/sfx/curtain.bin")
+    [] sfx_rocket
+        file(raw, #"skin"# "/sfx/rocket.bin")
 
 // load tiles into chrom
 chrrom

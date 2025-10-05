@@ -97,8 +97,7 @@ fn handle_start_button()
     // prevent pausing during curtain/congratulations
     if render_mode != RENDER_GAME || play_state >= PLAY_STATE_CURTAIN
         return
-    puf.play_sfx(puf_sfx_pause)
-    puf.stop($00)
+    set_sfx(SFX_PAUSE)
     render_mode = RENDER_MENU_SCREEN
     update_audio_and_nmi_wait()
     ppu_mask = PPUMASK_SPR_ON | PPUMASK_NO_CLIP

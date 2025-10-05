@@ -17,7 +17,7 @@ fn title_loop_normal()
         if pads[0].pressed & BUTTON_START
             return
         if frame_counter.b == 5
-            puf.play_sfx(puf_sfx_menuselect)
+            set_sfx(SFX_MENU_SELECT)
             goto mode game(true)
             : preserves
 
@@ -42,6 +42,6 @@ mode title()
     else
         title_loop_normal()
 
-    puf.play_sfx(puf_sfx_menuselect)
+    set_sfx(SFX_MENU_SELECT)
     goto mode type_menu()
     : preserves

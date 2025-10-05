@@ -22,6 +22,7 @@ function log_write(addr, val)
     if first_frame == nil then
         first_frame = frame_num
     end
+
     log((frame_num-first_frame)..": "..toBits(val, 8).." written to "..string.format("%x", addr))
 end
 

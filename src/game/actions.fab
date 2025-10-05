@@ -18,7 +18,7 @@ fn set_allegro()
 
 fn game_action.lock_piece() U
     if !is_position_valid()
-        puf.play_sfx(puf_sfx_curtain)
+        set_sfx(SFX_CURTAIN)
         curtain_row = -$10
         mute_audio()
         return PLAY_STATE_CURTAIN
@@ -52,8 +52,7 @@ fn game_action.check_full_lines() U
     row += line_index
 
     if is_row_full(row) == $01
-        // this is like the repeated sound?
-        puf.play_sfx(puf_sfx_tetrisclear)
+        set_sfx(SFX_LINE_CLEAR)
         completed_lines += 1
         completed_rows[line_index] = row
         // copy rows
@@ -71,10 +70,10 @@ fn game_action.check_full_lines() U
     vram_row = 0
     line_clear_anim_step = 0
     if completed_lines == 4
-        puf.play_sfx(puf_sfx_tetrisinit)
+        set_sfx(SFX_TETRIS_CLEAR)
     if completed_lines > 0
         return PLAY_STATE_WAIT_FOR_LINE_CLEAR_ANIM
-    puf.play_sfx(puf_sfx_lockpiece)
+    set_sfx(SFX_LOCK_PIECE)
     return PLAY_STATE_UPDATE_STATS
 
 fn is_row_full(U row) U

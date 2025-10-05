@@ -2,23 +2,125 @@ vars
     U music_type = 0
     Bool allegro
 
+// sfx indices
+ct U SFX_MENU_CHANGE = 1
+ct U SFX_MENU_SELECT = 2
+ct U SFX_SHIFT_PIECE = 3
+ct U SFX_TETRIS_CLEAR = 4
+ct U SFX_ROTATE_PIECE = 5
+ct U SFX_LEVEL_UP = 6
+ct U SFX_LOCK_PIECE = 7
+ct U SFX_TETRIS_END = 8
+ct U SFX_LINE_CLEAR = 9
+ct U SFX_CURTAIN = 10
+ct U SFX_ROCKET = 11
+ct U SFX_PAUSE = 12
+
+vars
+    CC/sfx sq1_sfx_ptr = sfx_ptrs[0]
+    U sq1_sfx_timer = 0
+
+    CC/sfx noise_sfx_ptr = sfx_ptrs[0]
+    U noise_sfx_timer = 0
+
+ct CC/sfx SFX_NULL = CC/sfx($0000)
+ct CC/sfx[] sfx_ptrs = CC/sfx[](
+    SFX_NULL,
+    @sfx_menu_change,
+    @sfx_menu_select,
+    @sfx_shift_piece,
+    @sfx_tetris_clear,
+    @sfx_rotate_piece,
+    @sfx_level_up,
+    @sfx_lock_piece,
+    @sfx_tetris_end,
+    @sfx_line_clear,
+    @sfx_curtain,
+    @sfx_rocket,
+    @sfx_pause,
+)
+
+ct U[] sfx_chan = U[](
+    $FF, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $01, $00
+)
+
 // TODO: may want to have a flag system where we set playback flags
 fn mute_audio()
-    puf.stop(0)
-    puf.process(0)
+    // puf.stop(0)
+    // puf.process(0)
+    {SQ1_VOL}($10)
+    {SQ2_VOL}($10)
+    {NOISE_VOL}($10)
+    {TRI_LINEAR}($00)
+
+fn set_sfx(U sfx_id)
+: +inline
+    U chan = sfx_chan[sfx_id]
+    if chan == 0
+        sq1_sfx_ptr = sfx_ptrs[sfx_id]
+        sq1_sfx_timer = 0
+    else if chan == 1
+        noise_sfx_ptr = sfx_ptrs[sfx_id]
+        noise_sfx_timer = 0
 
 fn update_audio()
-    if !DEBUG
-        puf.process(PUF_DEFAULT)
+    // yea this kinda cooked for now (can use the argument to silence channels
+    // that will be used by sfx
+    // puf.process(PUF_DEFAULT)
+    update_sfx()
+
+fn update_sfx()
+    // format is <duration> <register bitmask> <optional registers>
+    // e.g. regs of $03 for sq1 means 4000 and 4001 are written to
+    // process sq1
+    if sq1_sfx_ptr != SFX_NULL
+        if sq1_sfx_timer == 0
+            // read from pointer
+            sq1_sfx_timer = read U(sq1_sfx_ptr)
+            if sq1_sfx_timer == 0
+                // sfx is finished
+                {SQ1_VOL}($10)
+                sq1_sfx_ptr = SFX_NULL
+            else
+                // set up everything else
+                U sq1_regs = read U(sq1_sfx_ptr)
+                for U i = 0; i < 4; i += 1
+                    // shift flags out to read them
+                    if sq1_regs >>= 1
+                        // write
+                        {SQ1_VOL+i}(read U(sq1_sfx_ptr))
+        sq1_sfx_timer -= 1
+    // separate halves so they can hopefully use same vars
+    fence
+
+    // pending noise
+    if noise_sfx_ptr != SFX_NULL
+        // check if we advance ptr
+        if noise_sfx_timer == 0
+            // read from pointer
+            noise_sfx_timer = read U(noise_sfx_ptr)
+            if noise_sfx_timer == 0
+                // sfx is finished
+                {NOISE_VOL}($10)
+                noise_sfx_ptr = SFX_NULL
+            else
+                // set up everything else
+                U noise_regs = read U(noise_sfx_ptr)
+                for U i = 0; i < 4; i += 1
+                    // shift flags out to read them
+                    if noise_regs >>= 1
+                        // write
+                        {NOISE_VOL+i}(read U(noise_sfx_ptr))
+        noise_sfx_timer -= 1
 
 fn update_audio_and_nmi_wait()
     update_audio()
     nmi
 
 fn set_music()
-    if music_type < NUM_MUSIC_TRACKS
-        U speed = puf.play_track(music_type)
-        if allegro
-            puf.set_speed(speed << 1)
-    else
-        puf.stop(0)
+    // if music_type < NUM_MUSIC_TRACKS
+    //     U speed = puf.play_track(music_type)
+    //     if allegro
+    //         puf.set_speed(speed << 1)
+    // else
+    //     puf.stop(0)

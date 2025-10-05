@@ -47,6 +47,8 @@ Prior to this, I had been using GIMP to edit the [pattern tables](https://www.ne
 
 ### Famitracker
 
+*Note: not really using this for the sfx since it can't exactly recreate certain details*
+
 [Famitracker](http://famitracker.com/) is a popular music editor for composing NES/Famicom music. Like NEXXT, it's designed with the limitations of the target hardware in mind, and allows you to control the raw audio channels directly while still offering higher-level primitives than the direct [APU registers](https://www.nesdev.org/wiki/APU#Registers).
 
 This project rewrites the music and sound effects using Famitracker, which are then integrated through NESFab's PUF music engine. The NES Tetris audio engine is probably the most confusing part of the code, feeling especially hacky and scattered, so it's an ideal candidate to be replaced.
