@@ -15,7 +15,11 @@ Replicating the gameplay and visual/audio elements of an existing game has inher
 
 To avoid distribution of visual/audio assets, we instead provide an alternate *skin*, which contain equivalents for each one. Skins can be added and customized, with limited flexibility.
 
-One planned feature is skin extraction from the original ROM, but this is not implemented yet.
+By providing an original NES Tetris rom in the project's root folder, you can generate a "classic" skin by running `python scripts/make_classic.py`. You can then use it by changing the line at the bottom of `config.fab` to read
+```
+macro("skin", "classic")
+```
+and then running make.
 
 ## Implementation strategy
 
@@ -30,6 +34,15 @@ Non-features:
 - Any cycle-based timing glitches, like the game crash (however, it may be possible to implement a simulation similar to the [crash detection](https://github.com/kirjavascript/TetrisGYM/pull/61) used in TetrisGYM)
 - Other timing issues like screen transition durations, so TAS-level consistency is not enforced.
 - Inaccessible code (e.g. the unfinished 2-player feature)
+
+## Roadmap
+
+- Add b-type
+- Add music
+- Add demo
+- Sound effects for default skin
+- Add victory screens?
+- Test for frame-perfect accuracy
 
 ## Tools
 
