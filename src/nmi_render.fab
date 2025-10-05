@@ -148,8 +148,10 @@ fn nmi_render()
             break
         case RENDER_GAME
             render.game()
+            break
         case RENDER_HIGH_SCORE_ENTRY
             render.high_score_entry()
+            break
         default:
             break
     // nmi_renderers[render_mode]()

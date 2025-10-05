@@ -56,12 +56,11 @@ fn carry_bcd_uuu(UUU bcd) UUU
         bcd.c += $06
     return bcd
 
-// TODO: this is wrong???
 fn handle_pushdown()
     if S(pushdown) < 2
         return
     score_bcd += pushdown - 1
-    // carry logic
+    // for some reason carry logic is different for pushdown and line clear pts
     if score_bcd.a & %1111 >= $0A
         score_bcd.a += $06
     if score_bcd.a >= $A0

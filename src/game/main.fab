@@ -69,9 +69,6 @@ fn handle_game_over()
         return
     render_mode = RENDER_GAME
     update_leaderboard()
-    do for U i = 0; i != 0; i += 1
-        @board[i] = GAME_TILE_EMPTY
-    play_state = PLAY_STATE_GAME
     update_audio_and_nmi_wait()
     goto mode level_menu()
     : preserves
