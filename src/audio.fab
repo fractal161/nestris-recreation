@@ -3,6 +3,7 @@ vars
     Bool allegro
 
 // sfx indices
+ct U SFX_NONE = 0
 ct U SFX_MENU_CHANGE = 1
 ct U SFX_MENU_SELECT = 2
 ct U SFX_SHIFT_PIECE = 3
@@ -18,14 +19,15 @@ ct U SFX_PAUSE = 12
 
 vars
     CC/sfx sq1_sfx_ptr = sfx_ptrs[0]
+    U sq1_sfx_playing = 0 // needed to conditionally suppress sfx
     U sq1_sfx_timer = 0
 
     CC/sfx noise_sfx_ptr = sfx_ptrs[0]
     U noise_sfx_timer = 0
 
-ct CC/sfx SFX_NULL = CC/sfx($0000)
+ct CC/sfx SFX_NULLPTR = CC/sfx($0000)
 ct CC/sfx[] sfx_ptrs = CC/sfx[](
-    SFX_NULL,
+    SFX_NULLPTR,
     @sfx_menu_change,
     @sfx_menu_select,
     @sfx_shift_piece,
@@ -44,6 +46,16 @@ ct U[] sfx_chan = U[](
     $FF, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $01, $00
 )
 
+// positive for shift, rotate, lock
+ct U[] sfx_should_suppress = U[](
+    $00, $00, $00, $01, $00, $01, $00, $01, $00, $00, $00, $00, $00
+)
+
+// postive for tetris clear, level up, tetris end, line clear
+ct U[] sfx_should_persist = U[](
+    $00, $00, $00, $00, $01, $00, $01, $00, $01, $01, $00, $00, $00
+)
+
 // TODO: may want to have a flag system where we set playback flags
 fn mute_audio()
     // puf.stop(0)
@@ -57,8 +69,13 @@ fn set_sfx(U sfx_id)
 : +inline
     U chan = sfx_chan[sfx_id]
     if chan == 0
-        sq1_sfx_ptr = sfx_ptrs[sfx_id]
-        sq1_sfx_timer = 0
+        // done so smaller ingame sounds can't override longer ones
+        // TODO: look into replicating the behavior that can arbitrarily extend
+        // the long sounds
+        if !(sfx_should_suppress[sfx_id] && sfx_should_persist[sq1_sfx_playing])
+            sq1_sfx_timer = 0
+            sq1_sfx_ptr = sfx_ptrs[sfx_id]
+            sq1_sfx_playing = sfx_id
     else if chan == 1
         noise_sfx_ptr = sfx_ptrs[sfx_id]
         noise_sfx_timer = 0
@@ -73,14 +90,15 @@ fn update_sfx()
     // format is <duration> <register bitmask> <optional registers>
     // e.g. regs of $03 for sq1 means 4000 and 4001 are written to
     // process sq1
-    if sq1_sfx_ptr != SFX_NULL
+    if sq1_sfx_ptr != SFX_NULLPTR
         if sq1_sfx_timer == 0
             // read from pointer
             sq1_sfx_timer = read U(sq1_sfx_ptr)
             if sq1_sfx_timer == 0
                 // sfx is finished
                 {SQ1_VOL}($10)
-                sq1_sfx_ptr = SFX_NULL
+                sq1_sfx_ptr = SFX_NULLPTR
+                sq1_sfx_playing = SFX_NONE
             else
                 // set up everything else
                 U sq1_regs = read U(sq1_sfx_ptr)
@@ -94,7 +112,7 @@ fn update_sfx()
     fence
 
     // pending noise
-    if noise_sfx_ptr != SFX_NULL
+    if noise_sfx_ptr != SFX_NULLPTR
         // check if we advance ptr
         if noise_sfx_timer == 0
             // read from pointer
@@ -102,7 +120,7 @@ fn update_sfx()
             if noise_sfx_timer == 0
                 // sfx is finished
                 {NOISE_VOL}($10)
-                noise_sfx_ptr = SFX_NULL
+                noise_sfx_ptr = SFX_NULLPTR
             else
                 // set up everything else
                 U noise_regs = read U(noise_sfx_ptr)
