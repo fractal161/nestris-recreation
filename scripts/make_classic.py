@@ -34,6 +34,7 @@ if __name__ == '__main__':
         'skins/classic/level_menu',
         'skins/classic/title',
         'skins/classic/type_menu',
+        'skins/classic/high_score_entry',
         'skins/classic/sfx',
     ]
     for d in dirs:
@@ -108,6 +109,14 @@ if __name__ == '__main__':
         f.write(extract_palette(prg, 0xAD2B))
     with open('skins/classic/type_menu/screen.nam', 'wb+') as f:
         f.write(extract_nametable(prg, 0xB67A))
+
+    with open('skins/classic/high_score_entry/palette.pal', 'wb+') as f:
+        # this one uses a hybrid of two different palettes
+        palette_start = get_prg_range(prg, 0xAD2B+3, 0x14)
+        palette_end = get_prg_range(prg, 0xACF3+3+0x14, 0x0C)
+        f.write(palette_start + palette_end)
+    with open('skins/classic/high_score_entry/screen.nam', 'wb+') as f:
+        f.write(extract_nametable(prg, 0xC39D))
 
     # sfx!
     with open('skins/classic/sfx/menu_change.bin', 'wb+') as f:

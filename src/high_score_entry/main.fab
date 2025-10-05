@@ -22,11 +22,13 @@ fn handle_high_score_entry_input()
         hs_name_pos += 1
         if hs_name_pos == LEADERBOARD_NAME_LENGTH
             hs_name_pos = 0
+        hs_letter = hs_entry.name[hs_name_pos]
     if pads[0].pressed & (BUTTON_B|BUTTON_LEFT)
         set_sfx(SFX_MENU_CHANGE)
         hs_name_pos -= 1
         if hs_name_pos == $FF
             hs_name_pos = LEADERBOARD_NAME_LENGTH - 1
+        hs_letter = hs_entry.name[hs_name_pos]
     if pads[0].held & BUTTON_DOWN
         if frame_counter.a & %111 == 0:
             set_sfx(SFX_MENU_CHANGE)
