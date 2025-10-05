@@ -61,11 +61,17 @@ fn handle_pushdown()
     if S(pushdown) < 2
         return
     score_bcd += pushdown - 1
-    score_bcd = carry_bcd_uuu(score_bcd)
+    // carry logic
+    if score_bcd.a & %1111 >= $0A
+        score_bcd.a += $06
+    if score_bcd.a >= $A0
+        score_bcd.a &= $F0
+        score_bcd.a += $60
+        score_bcd.b += 1
     game_render_flags |= GAME_RENDER_SCORE
+    pushdown = 0
 
 fn handle_line_clear_points()
-    pushdown = 0
     UU points = points_bcd_table[completed_lines]
     for U i = 0; i <= level_number; i += 1
         score_bcd += points
