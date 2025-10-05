@@ -135,6 +135,12 @@ fn copy_board_row_to_vram()
     if S(vram_row) >= $14
         vram_row = $20
 
+fn render.high_score_entry()
+    // there's a flag check but i think it's always set
+    ppu_set_addr(hs_letter_addr)
+    {PPUDATA}(@leaderboard_charmap[hs_letter])
+    ppu_set_scroll(0, 0)
+
 fn nmi_render()
     switch render_mode
         case RENDER_MENU_SCREEN
@@ -142,6 +148,8 @@ fn nmi_render()
             break
         case RENDER_GAME
             render.game()
+        case RENDER_HIGH_SCORE_ENTRY
+            render.high_score_entry()
         default:
             break
     // nmi_renderers[render_mode]()

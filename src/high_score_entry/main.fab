@@ -1,0 +1,80 @@
+vars /hs_entry
+    MM hs_entry_ptr
+    // TODO: currently i think the only possible method is to copy the entry
+    // into here, then write it back, which feels eh
+    LeaderboardEntry hs_entry
+    U hs_name_pos = 0
+
+// different group so nmi_render doesn't include the other vars
+vars
+    U hs_letter
+    UU hs_letter_addr
+
+fn handle_high_score_entry_input()
+    if pads[0].pressed & BUTTON_START
+        write LeaderboardEntry(hs_entry_ptr, hs_entry)
+        set_sfx(SFX_MENU_SELECT)
+        update_audio_and_nmi_wait()
+        goto mode level_menu()
+        : preserves
+    if pads[0].pressed & (BUTTON_A|BUTTON_RIGHT)
+        set_sfx(SFX_MENU_CHANGE)
+        hs_name_pos += 1
+        if hs_name_pos == LEADERBOARD_NAME_LENGTH
+            hs_name_pos = 0
+    if pads[0].pressed & (BUTTON_B|BUTTON_LEFT)
+        set_sfx(SFX_MENU_CHANGE)
+        hs_name_pos -= 1
+        if hs_name_pos == $FF
+            hs_name_pos = LEADERBOARD_NAME_LENGTH - 1
+    if pads[0].held & BUTTON_DOWN
+        if frame_counter.a & %111 == 0:
+            set_sfx(SFX_MENU_CHANGE)
+            hs_letter = hs_entry.name[hs_name_pos]
+            hs_letter -= 1
+            if hs_letter == $FF
+                hs_letter = len(leaderboard_charmap) - 1
+            hs_entry.name[hs_name_pos] = hs_letter
+    if pads[0].held & BUTTON_UP
+        if frame_counter.a & %111 == 0:
+            set_sfx(SFX_MENU_CHANGE)
+            hs_letter = hs_entry.name[hs_name_pos]
+            hs_letter += 1
+            if hs_letter == len(leaderboard_charmap)
+                hs_letter = 0
+            hs_entry.name[hs_name_pos] = hs_letter
+
+// rank is the leaderboard position
+mode high_score_entry(U rank)
+: nmi main_nmi
+    // TODO: set_music
+    render_mode = RENDER_HIGH_SCORE_ENTRY
+    safe_disable_rendering()
+    mmc1_set_chr_0(CHR_TITLE_MENU)
+    // palette updates need to be close to blanking
+    // TODO: ppu_upload_full_palette(@palette_high_score_entry)
+    // TODO: load_nt(@nt_high_score_entry)
+    // game type letter
+    ppu_set_addr(ppu_addr_from_coords_ct(13, 3, 0))
+    {PPUDATA}($0A + game_type)
+    print_leaderboard()
+    safe_enable_rendering()
+    hs_entry_ptr = @leaderboard_a
+    if game_type == GAME_TYPE_B
+        hs_entry_ptr = @leaderboard_b
+    // set pointer
+    for U i = 0; i < rank; i += 1
+        read LeaderboardEntry(hs_entry_ptr)
+    MM ptr_tmp = hs_entry_ptr
+    hs_entry = read LeaderboardEntry(ptr_tmp)
+    while true
+        hide_oam(0)
+        if frame_counter.a & %11 > 0:
+            U x = 72 + (hs_name_pos << 3)
+            U y = 159 + (rank << 4)
+            oam_index = push_oam(oam_index, x, y, MENU_TILE_CURSOR, ATTR_PRIORITY | %01)
+        handle_high_score_entry_input()
+        // this is technically inefficient but who cares
+        hs_letter_addr = ppu_addr_from_coords(9+hs_name_pos, 20 + (rank<<1), 0)
+        // TODO: set render flag for writing letter
+        update_audio_and_nmi_wait()

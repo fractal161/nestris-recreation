@@ -42,7 +42,7 @@ fn update_leaderboard()
     if game_type == GAME_TYPE_B
         lb_ptr_tmp = @leaderboard_b
     MM[3] lb_ptrs
-    S rank = 0
+    U rank = 0
     for U i = 0; i < 3; i += 1
         lb_ptrs[i] = lb_ptr_tmp
         LeaderboardEntry entry = read LeaderboardEntry(lb_ptr_tmp)
@@ -56,12 +56,13 @@ fn update_leaderboard()
         LeaderboardEntry entry = read LeaderboardEntry(lb_ptr_tmp)
         write LeaderboardEntry(lb_ptr_tmp, entry)
     LeaderboardEntry new_entry = LeaderboardEntry(
-        U[6]($00, $00, $00, $00, $00, $00), // dashes
+        U[LEADERBOARD_NAME_LENGTH]($00), // dashes
         score_bcd,
         level_number
     )
-    write LeaderboardEntry(lb_ptrs[U(rank)], new_entry)
-    // TODO: goto mode congrats_screen to enter scores
+    write LeaderboardEntry(lb_ptrs[rank], new_entry)
+    goto mode high_score_entry(rank)
+    : preserves
 
 fn handle_game_over()
     if play_state != PLAY_STATE_GAME_OVER
