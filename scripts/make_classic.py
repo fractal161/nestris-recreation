@@ -215,9 +215,9 @@ if __name__ == '__main__':
         # init data
         f.write(stride_bytes)
         f.write(b'\x0F')
-        f.write(get_prg_range(prg, 0xE120, 4))
+        f.write(get_prg_range(prg, 0xE11C, 4))
         # loop
-        hi_byte = get_prg_byte(prg, 0xE4D1+19)
+        hi_byte = get_prg_byte(prg, 0xE4D1+20)
         for i in range(9):
             f.write(stride_bytes)
             f.write(b'\x0C') # 4002 and 4003

@@ -62,7 +62,7 @@ fn render.game()
         {PPUDATA}(count.b)
         print_byte(count.a)
     // clear all flags at once
-    game_render_flags &= !(GAME_RENDER_LINES | GAME_RENDER_LEVEL |
+    game_render_flags &= ~(GAME_RENDER_LINES | GAME_RENDER_LEVEL |
         GAME_RENDER_SCORE | GAME_RENDER_PIECE_COUNT)
     // tetris flash
     ppu_set_addr($3F0E)
