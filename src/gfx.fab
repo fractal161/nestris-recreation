@@ -51,11 +51,7 @@ fn reset_nametable(U nt)
     ppu_upload_fill($FF, 960)
     ppu_upload_fill($00, 64)
 
-// declared here to prevent compiler warnings. it is actually declared in
-// skin.macrofab
-data /nt
-
-fn load_nt(CCC/nt nt)
+fn load_nt(CC/nt nt)
     ppu_reset_addr($2000)
     for UU i = 0; i < 1024; i += 1
         {PPUDATA}(nt{i})

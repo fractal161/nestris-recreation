@@ -13,4 +13,4 @@ ct U VERSION = VERSION_NTSC
 
 // Do not change the format of line!
 // the second argument is the desired skin
-macro("skin", "default")
+macro("skin", "classic")
